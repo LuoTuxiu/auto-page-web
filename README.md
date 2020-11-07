@@ -1,4 +1,4 @@
-# page-wms
+# auto-page-web
 
 ## Overview
 
@@ -7,6 +7,14 @@
 <!-- ## Screenshots
 
 ![demo](./demo/demo.gif) -->
+
+## 开始开发
+
+将对应的后台项目本地 run 起来后，进入本工程，执行以下命令：
+
+```
+yarn install & yarn dev
+```
 
 ## License
 

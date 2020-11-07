@@ -20,9 +20,9 @@ export interface Page {
   _id: string;
   url: string;
   content: string;
-  updatedTime: number;
-  endTime: number;
-  createdTime: number;
+  updateTime: string;
+  endTime: string;
+  createTime: string;
   title: string;
   description: string;
   keyword: string;

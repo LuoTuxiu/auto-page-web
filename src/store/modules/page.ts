@@ -16,13 +16,28 @@ class Page extends VuexModule implements IPageState {
 	@Mutation
 
 	@Action
-	public async GetPageList() {
+	public async GetPageList(params = {
+		page: 1,
+		limit: 10
+	}) {
 		const { data } = await applloClient.query({
 			query: gql`
 				query {
-					pageList(page: 1, limit: 10){
-						url
-						_id
+					pageList(page: ${params.page}, limit: ${params.limit}){
+						total
+						list {
+							id
+							url
+							title
+							content
+							endTime
+							updateTime
+							createTime
+							description
+							keyword
+							originPath
+							juejin_id
+						}
 					}
 				}
 			`
@@ -43,6 +58,49 @@ class Page extends VuexModule implements IPageState {
 			`
 		})
 		return data.pageList
+	}
+
+	@Action
+	public async UploadToOwnBlogApi(params = {
+	}) {
+		const { data } = await applloClient.mutate({
+			mutation: gql`
+				mutation {
+					updateLocalBlog {
+						data
+					}
+				}
+			`
+		})
+		return data.pageList
+	}
+
+	@Action
+	public async publishJuejinBlogApi(params: any) {
+		const { data } = await applloClient.mutate({
+			mutation: gql`
+				mutation {
+					publishJuejinBlog(id: "${params.id}") {
+						data
+					}
+				}
+			`
+		})
+		return data.pageList
+	}
+
+	@Action
+	public async deleteJuejinBlogApi(params: any) {
+		const { data } = await applloClient.mutate({
+			mutation: gql`
+				mutation {
+					deleteJuejinBlog(id: "${params.id}", juejin_id: "${params.juejin_id}") {
+						data
+					}
+				}
+			`
+		})
+		return data
 	}
 }
 

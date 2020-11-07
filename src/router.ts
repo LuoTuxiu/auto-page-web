@@ -52,6 +52,14 @@ export default new Router({
 						title: 'Dashboard',
 						icon: 'dashboard'
 					}
+				},
+				{
+					path: 'blog/list',
+					component: () => import(/* webpackChunkName: "blog" */ '@/views/blog/list.vue'),
+					meta: {
+						title: 'blog',
+						icon: 'blog'
+					}
 				}
 			]
 		},
