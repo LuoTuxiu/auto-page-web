@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 import 'normalize.css'
 import ElementUI from 'element-ui'
+import moment from 'moment'
 import SvgIcon from 'vue-svgicon'
 
 import '@/styles/element-variables.scss'
@@ -27,6 +28,10 @@ Vue.use(SvgIcon, {
 	tagName: 'svg-icon',
 	defaultWidth: '1em',
 	defaultHeight: '1em'
+})
+
+Vue.filter('format', function(value: number) {
+	return moment(Number(value)).format('YYYY-MM-DD HH:mm:ss')
 })
 
 Vue.config.productionTip = false

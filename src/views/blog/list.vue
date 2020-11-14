@@ -6,10 +6,7 @@
       </el-button>
     </div>
     <el-table :data="data">
-      <el-table-column
-        prop="id"
-        label="id"
-      />
+      <!-- <el-table-column prop="id" label="id" /> -->
       <el-table-column
         prop="title"
         label="标题"
@@ -29,11 +26,19 @@
       <el-table-column
         prop="updateTime"
         label="更新时间"
-      />
+      >
+        <template slot-scope="scope">
+          <span> {{ scope.row.updateTime | format }} </span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="createTime"
         label="创建时间"
-      />
+      >
+        <template slot-scope="scope">
+          <span> {{ scope.row.createTime | format }} </span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="juejin_id"
         label="掘金id"
@@ -43,6 +48,13 @@
         label="操作"
       >
         <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="small"
+            @click="handleClickEdit(scope.row)"
+          >
+            编辑
+          </el-button>
           <el-button
             type="text"
             size="small"
@@ -124,6 +136,15 @@ export default class extends Vue {
 		})
 		console.log(result)
 		this.handleGetLocalBlogList()
+	}
+
+	handleClickEdit(row) {
+		this.$router.push({
+			name: 'blogEdit',
+			params: {
+				id: row.id
+			}
+		})
 	}
 
 	async handleClickPublishOwnBlog() {

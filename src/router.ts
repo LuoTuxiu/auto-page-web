@@ -44,6 +44,10 @@ export default new Router({
 			path: '/',
 			component: Layout,
 			redirect: '/dashboard',
+			meta: {
+				title: 'Dashboard',
+				icon: 'dashboard'
+			},
 			children: [
 				{
 					path: 'dashboard',
@@ -58,6 +62,15 @@ export default new Router({
 					component: () => import(/* webpackChunkName: "blog" */ '@/views/blog/list.vue'),
 					meta: {
 						title: 'blog',
+						icon: 'blog'
+					}
+				},
+				{
+					path: 'blog/edit/:id',
+					name: 'blogEdit',
+					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
+					meta: {
+						title: 'edit',
 						icon: 'blog'
 					}
 				}

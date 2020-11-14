@@ -50,14 +50,16 @@ class Page extends VuexModule implements IPageState {
 		const { data } = await applloClient.query({
 			query: gql`
 				query {
-					pageDetail(_id: "${params._id}") {
+					pageDetail(id: "${params.id}") {
 						url
-						_id
+						id
+						content
+						title
 					}
 				}
 			`
 		})
-		return data.pageList
+		return data.pageDetail
 	}
 
 	@Action
