@@ -3,7 +3,10 @@
 		<div class="blog-header--action">
 			<el-button @click="handleSaveLocal"> 保存到本地文件 </el-button>
 			<el-button @click="handleClickPublishOwnBlog"> 发布到自己博客 </el-button>
-			<el-button @click="handlePublishJuejin"> 发布掘金 </el-button>
+			<el-button v-if="detail.juejin_id" @click="handlePublishJuejin">
+				编辑且发布掘金
+			</el-button>
+			<el-button v-else @click="handlePublishJuejin"> 发布掘金 </el-button>
 		</div>
 		<div class="blog-edit--content">
 			<div class="markdown-input">
@@ -30,6 +33,7 @@ import { PageModule } from '@/store/modules/page'
 })
 export default class extends Vue {
 	markdownData = ''
+	detail = {}
 
 	mounted() {
 		this.handleGetLocalBlogDetail()
@@ -37,9 +41,10 @@ export default class extends Vue {
 
 	async handleGetLocalBlogDetail(propParams = {}) {
 		const params = {
-			id: this.$route.params.id,
+			blogId: this.$route.params.id,
 		}
 		const result = await PageModule.GetPageDetail(params)
+		this.detail = Object.assign({}, result)
 		this.markdownData = result.content
 	}
 
@@ -55,20 +60,25 @@ export default class extends Vue {
 		})
 	}
 
-	handleSaveLocal() {
+	async handleSaveLocal() {
 		console.log(`handleSaveLocal`)
+		const result = await PageModule.updateToLocalApi({
+			blogId: this.$route.params.id,
+			content: this.markdownData,
+		})
 	}
 
 	async handlePublishJuejin() {
 		const result = await PageModule.publishJuejinBlogApi({
-			id: this.$route.params.id,
+			blogId: this.$route.params.id,
+			content: this.markdownData,
 		})
 		this.handleGetLocalBlogList()
 	}
 
 	async handleClickDeleteJuejin(row) {
 		const result = await PageModule.deleteJuejinBlogApi({
-			id: row.id,
+			blogId: row.blogId,
 			juejin_id: row.juejin_id,
 		})
 		console.log(result)

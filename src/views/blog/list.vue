@@ -6,7 +6,7 @@
       </el-button>
     </div>
     <el-table :data="data">
-      <!-- <el-table-column prop="id" label="id" /> -->
+      <!-- <el-table-column prop="blogId" label="blogId" /> -->
       <el-table-column
         prop="title"
         label="标题"
@@ -56,6 +56,7 @@
             编辑
           </el-button>
           <el-button
+            v-if="!scope.row.juejin_id"
             type="text"
             size="small"
             @click="handleClickPublishJuejin(scope.row)"
@@ -123,26 +124,28 @@ export default class extends Vue {
 
 	async handleClickPublishJuejin(row) {
 		const result = await PageModule.publishJuejinBlogApi({
-			id: row.id
+			blogId: row.blogId,
+			content: row.content
 		})
 		console.log(result)
 		this.handleGetLocalBlogList()
 	}
 
 	async handleClickDeleteJuejin(row) {
-		const result = await PageModule.deleteJuejinBlogApi({
-			id: row.id,
+		const [err, result] = await PageModule.deleteJuejinBlogApi({
+			blogId: row.blogId,
 			juejin_id: row.juejin_id
 		})
-		console.log(result)
-		this.handleGetLocalBlogList()
+		if (!err) {
+			this.handleGetLocalBlogList()
+		}
 	}
 
 	handleClickEdit(row) {
 		this.$router.push({
 			name: 'blogEdit',
 			params: {
-				id: row.id
+				id: row.blogId
 			}
 		})
 	}
