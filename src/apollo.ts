@@ -1,6 +1,7 @@
-import ApolloClient from 'apollo-boost'
+import { ApolloClient, InMemoryCache } from '@apollo/client/core'
 
 const applloClient = new ApolloClient({
+	cache: new InMemoryCache(),
 	uri: 'http://localhost:3001/graphql'
 })
 

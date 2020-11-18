@@ -5,7 +5,7 @@ import {
 	Mutation,
 	getModule
 } from 'vuex-module-decorators'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client/core'
 import applloClient from '@/apollo'
 import store from '@/store'
 
@@ -81,17 +81,20 @@ class Page extends VuexModule implements IPageState {
   	return data.pageList
   }
 
-  @Action
+  @Action({
+  	rawError: true
+  })
   public async updateToLocalApi(params: any) {
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					updateToLocal(blogId: "${params.blogId}", content: "${params.content}") {
+					updateToLocal(blogId: "${params.blogId}", content: "${encodeURIComponent(params.content)}") {
 						data
 					}
 				}
 			`
   	})
+  	console.log(data)
   	return data
   }
 
@@ -106,17 +109,50 @@ class Page extends VuexModule implements IPageState {
   		},
   		mutation: gql`
 				mutation {
-					publishJuejinBlog(blogId: ${params.blogId}, content: ${params.content}) {
+					publishJuejinBlog(blogId: "${params.blogId}") {
 						data
 					}
 				}
 			`
+  		// mutation: gql`mutation($blogId: String!, $content: String!) {
+  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  		// 			data
+  		// 		}
+  		// 	}
+  		// `
+  	})
+  	return data.publishJuejinBlog.data
+  }
+
+	@Action({
+  	rawError: true
+	})
+  public async updateJuejinBlogApi(params: any) {
+  	console.log(params)
+  	const { data } = await applloClient.mutate({
+  		// variables: {
+  		// 	content: params.content,
+  		// 	blogId: params.blogId
+  		// },
+  		mutation: gql`
+				mutation {
+					updateJuejinBlog(blogId: "${params.blogId}", juejin_id: "${params.juejin_id}") {
+						data
+					}
+				}
+			`
+  		// mutation: gql`mutation($blogId: String!, $content: String!) {
+  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  		// 			data
+  		// 		}
+  		// 	}
+  		// `
   	})
   	return data.publishJuejinBlog.data
   }
 
   @Action
-  public async deleteJuejinBlogApi(params: any) {
+	public async deleteJuejinBlogApi(params: any) {
   	try {
   		const { data } = await applloClient.mutate({
   			mutation: gql`
@@ -131,7 +167,7 @@ class Page extends VuexModule implements IPageState {
   	} catch (error) {
   		return [error]
   	}
-  }
+	}
 }
 
 export const PageModule = getModule(Page)

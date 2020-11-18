@@ -8,7 +8,7 @@ import {
 // import { login, logout, getUserInfo } from '@/api/users'
 import { getToken, setToken, removeToken } from '@/utils/cookies'
 import store from '@/store'
-import gql from 'graphql-tag'
+import { gql } from '@apollo/client/core'
 import applloClient from '@/apollo'
 
 export interface IUserState {
