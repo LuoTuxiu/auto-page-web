@@ -59,20 +59,14 @@ export default class extends Vue {
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
-		console.log('====================================')
-		console.log(`即将发请求`)
-		console.log('====================================')
 		const pageId = this.$route.params.id
-		console.log('====================================')
-		console.log(pageId)
-		console.log('====================================')
 		if (pageId) {
 			const params = {
 				pageId
 			}
 			const result = await PageModule.GetPageDetail(params)
 			this.detail = Object.assign({}, result)
-			this.markdownData = result.content
+			this.markdownData = decodeURIComponent(result.content)
 		}
 	}
 

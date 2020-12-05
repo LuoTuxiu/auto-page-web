@@ -18,10 +18,11 @@
         prop="keyword"
         label="关键字"
       /> -->
-      <el-table-column
+      <!-- <el-table-column
         prop="content"
         label="内容"
-      />
+        width="200"
+      /> -->
       <el-table-column
         prop="grouping"
         label="分组"
