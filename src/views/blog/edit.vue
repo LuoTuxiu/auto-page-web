@@ -55,12 +55,15 @@ export default class extends Vue {
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
-		const params = {
-			blogId: this.$route.params.id
+		const blogId = this.$route.params.id
+		if (blogId) {
+			const params = {
+				blogId
+			}
+			const result = await PageModule.GetPageDetail(params)
+			this.detail = Object.assign({}, result)
+			this.markdownData = result.content
 		}
-		const result = await PageModule.GetPageDetail(params)
-		this.detail = Object.assign({}, result)
-		this.markdownData = result.content
 	}
 
 	handleCurrentChange(current) {
@@ -77,10 +80,29 @@ export default class extends Vue {
 
 	async handleSaveLocal() {
 		console.log(`handleSaveLocal`)
-		const result = await PageModule.updateToLocalApi({
-			blogId: this.$route.params.id,
-			content: this.markdownData
-		})
+		const blogId = this.$route.params.id
+		if (blogId) {
+			const result = await PageModule.updatePageApi({
+				content: this.markdownData,
+				blogId
+			})
+		} else {
+			this.$prompt('请输入文章分类', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				inputErrorMessage: '文章分类格式不正确'
+			}).then(async({ value }) => {
+				const result = await PageModule.addPageApi({
+					content: this.markdownData,
+					filepath: value
+				})
+			}).catch(() => {
+				this.$message({
+					type: 'info',
+					message: '取消输入'
+				})
+			})
+		}
 	}
 
 	async handlePublishJuejin() {
@@ -121,20 +143,21 @@ export default class extends Vue {
 	.blog-edit--content {
 		display: flex;
 		padding: 20px 0;
+		height: 100vh;
 		& > div {
 			flex: 1;
-			height: 100vh;
+			width: 50%;
 		}
 		.markdown-input {
-			height: 100%;
 			margin-right: 20px;
 		}
 		.markdown-input--textarea {
 			width: 100%;
-			height: 100vh;
+			height: 100%;
 		}
 		.vue-markdown--content {
 			border: 1px solid rgb(118, 118, 118);
+			overflow-y: auto;
 		}
 	}
 </style>

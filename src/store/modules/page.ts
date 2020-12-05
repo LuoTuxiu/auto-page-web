@@ -84,11 +84,11 @@ class Page extends VuexModule implements IPageState {
   @Action({
   	rawError: true
   })
-  public async updateToLocalApi(params: any) {
+  public async updatePageApi(params: any) {
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					updateToLocal(blogId: "${params.blogId}", content: "${encodeURIComponent(params.content)}") {
+					updatePage(blogId: "${params.blogId || ''}", content: "${encodeURIComponent(params.content)}", filepath: "${params.filepath}") {
 						data
 					}
 				}
@@ -98,10 +98,44 @@ class Page extends VuexModule implements IPageState {
   	return data
   }
 
+	@Action({
+  	rawError: true
+	})
+  public async addPageApi(params: any) {
+  	const { data } = await applloClient.mutate({
+  		mutation: gql`
+				mutation {
+					addPage(input: {content: "${encodeURIComponent(params.content)}", filepath: "${params.filepath || ''}"}) {
+						data
+					}
+				}
+			`
+  	})
+  	console.log(data)
+  	return data
+  }
+
+	@Action({
+  	rawError: true
+	})
+	public async deletePageApi(params: any) {
+  	const { data } = await applloClient.mutate({
+  		mutation: gql`
+				mutation {
+					deletePage(blogId: "${params.blogId || ''}") {
+						data
+					}
+				}
+			`
+  	})
+  	console.log(data)
+  	return data
+	}
+
   @Action({
   	rawError: true
   })
-  public async publishJuejinBlogApi(params: any) {
+	public async publishJuejinBlogApi(params: any) {
   	const { data } = await applloClient.mutate({
   		variables: {
   			content: params.content,
@@ -122,7 +156,7 @@ class Page extends VuexModule implements IPageState {
   		// `
   	})
   	return data.publishJuejinBlog.data
-  }
+	}
 
 	@Action({
   	rawError: true

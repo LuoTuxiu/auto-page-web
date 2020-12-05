@@ -4,6 +4,9 @@
       <el-button @click="handleClickPublishOwnBlog">
         发布到自己博客
       </el-button>
+      <el-button @click="handleClickAddNewBlog">
+        新建本地博客
+      </el-button>
     </div>
     <el-table :data="data">
       <!-- <el-table-column prop="blogId" label="blogId" /> -->
@@ -70,6 +73,13 @@
             @click="handleClickDeleteJuejin(scope.row)"
           >
             删除掘金
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="handleClickDeletepage(scope.row)"
+          >
+            删除本地文件
           </el-button>
         </template>
       </el-table-column>
@@ -139,6 +149,24 @@ export default class extends Vue {
 		if (!err) {
 			this.handleGetLocalBlogList()
 		}
+	}
+
+	async handleClickDeletepage(row) {
+    		const [err, result] = await PageModule.deletePageApi({
+			blogId: row.blogId,
+			juejin_id: row.juejin_id
+		})
+		if (!err) {
+			this.handleGetLocalBlogList()
+		}
+	}
+
+	handleClickAddNewBlog() {
+		this.$router.push({
+			name: 'blogEdit',
+			params: {
+			}
+		})
 	}
 
 	handleClickEdit(row) {
