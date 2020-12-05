@@ -73,6 +73,15 @@ export default new Router({
 						title: 'edit',
 						icon: 'blog'
 					}
+				},
+				{
+					path: 'blog/add',
+					name: 'blogAdd',
+					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
+					meta: {
+						title: 'edit',
+						icon: 'blog'
+					}
 				}
 			]
 		},

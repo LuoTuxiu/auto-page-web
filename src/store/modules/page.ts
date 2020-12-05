@@ -30,12 +30,13 @@ class Page extends VuexModule implements IPageState {
 					pageList(page: ${params.page}, limit: ${params.limit}){
 						total
 						list {
-							blogId
+							pageId
 							url
 							title
 							content
 							endTime
 							updateTime
+							grouping
 							createTime
 							description
 							keyword
@@ -54,9 +55,9 @@ class Page extends VuexModule implements IPageState {
   	const { data } = await applloClient.query({
   		query: gql`
 				query {
-					pageDetail(blogId: "${params.blogId}") {
+					pageDetail(pageId: "${params.pageId}") {
 						url
-						blogId
+						pageId
 						content
 						title
 						juejin_id
@@ -88,7 +89,7 @@ class Page extends VuexModule implements IPageState {
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					updatePage(blogId: "${params.blogId || ''}", content: "${encodeURIComponent(params.content)}", filepath: "${params.filepath}") {
+					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", content: "${encodeURIComponent(params.content)}") {
 						data
 					}
 				}
@@ -101,11 +102,12 @@ class Page extends VuexModule implements IPageState {
 	@Action({
   	rawError: true
 	})
-  public async addPageApi(params: any) {
+  public async addPageApi(params: Page.AddPageType) {
+  	console.log(params)
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					addPage(input: {content: "${encodeURIComponent(params.content)}", filepath: "${params.filepath || ''}"}) {
+					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", grouping: "${params.grouping || ''}"}) {
 						data
 					}
 				}
@@ -122,7 +124,7 @@ class Page extends VuexModule implements IPageState {
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					deletePage(blogId: "${params.blogId || ''}") {
+					deletePage(pageId: "${params.pageId || ''}") {
 						data
 					}
 				}
@@ -139,17 +141,17 @@ class Page extends VuexModule implements IPageState {
   	const { data } = await applloClient.mutate({
   		variables: {
   			content: params.content,
-  			blogId: params.blogId
+  			pageId: params.pageId
   		},
   		mutation: gql`
 				mutation {
-					publishJuejinBlog(blogId: "${params.blogId}") {
+					publishJuejinBlog(pageId: "${params.pageId}") {
 						data
 					}
 				}
 			`
-  		// mutation: gql`mutation($blogId: String!, $content: String!) {
-  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
   		// 			data
   		// 		}
   		// 	}
@@ -166,17 +168,17 @@ class Page extends VuexModule implements IPageState {
   	const { data } = await applloClient.mutate({
   		// variables: {
   		// 	content: params.content,
-  		// 	blogId: params.blogId
+  		// 	pageId: params.pageId
   		// },
   		mutation: gql`
 				mutation {
-					updateJuejinBlog(blogId: "${params.blogId}", juejin_id: "${params.juejin_id}") {
+					updateJuejinBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
 						data
 					}
 				}
 			`
-  		// mutation: gql`mutation($blogId: String!, $content: String!) {
-  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
   		// 			data
   		// 		}
   		// 	}
@@ -191,7 +193,7 @@ class Page extends VuexModule implements IPageState {
   		const { data } = await applloClient.mutate({
   			mutation: gql`
           mutation {
-            deleteJuejinBlog(blogId: "${params.blogId}", juejin_id: "${params.juejin_id}") {
+            deleteJuejinBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
               data
             }
           }

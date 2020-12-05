@@ -9,7 +9,7 @@
       </el-button>
     </div>
     <el-table :data="data">
-      <!-- <el-table-column prop="blogId" label="blogId" /> -->
+      <!-- <el-table-column prop="pageId" label="pageId" /> -->
       <el-table-column
         prop="title"
         label="标题"
@@ -18,30 +18,35 @@
         prop="keyword"
         label="关键字"
       /> -->
-      <!-- <el-table-column
+      <el-table-column
         prop="content"
         label="内容"
-      /> -->
-      <el-table-column
-        prop="originPath"
-        label="原始路径"
       />
       <el-table-column
-        prop="updateTime"
-        label="更新时间"
-      >
-        <template slot-scope="scope">
-          <span> {{ scope.row.updateTime | format }} </span>
-        </template>
-      </el-table-column>
+        prop="grouping"
+        label="分组"
+      />
+      <!-- <el-table-column
+        prop="originPath"
+        label="原始路径"
+      /> -->
       <el-table-column
         prop="createTime"
         label="创建时间"
       >
         <template slot-scope="scope">
-          <span> {{ scope.row.createTime | format }} </span>
+          <span> {{ scope.row.createTime | formatDate }} </span>
         </template>
       </el-table-column>
+      <el-table-column
+        prop="updateTime"
+        label="更新时间"
+      >
+        <template slot-scope="scope">
+          <span> {{ scope.row.updateTime | formatDate }} </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="juejin_id"
         label="掘金id"
@@ -79,7 +84,7 @@
             size="small"
             @click="handleClickDeletepage(scope.row)"
           >
-            删除本地文件
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -134,7 +139,7 @@ export default class extends Vue {
 
 	async handleClickPublishJuejin(row) {
 		const result = await PageModule.publishJuejinBlogApi({
-			blogId: row.blogId,
+			pageId: row.pageId,
 			content: row.content
 		})
 		console.log(result)
@@ -143,7 +148,7 @@ export default class extends Vue {
 
 	async handleClickDeleteJuejin(row) {
 		const [err, result] = await PageModule.deleteJuejinBlogApi({
-			blogId: row.blogId,
+			pageId: row.pageId,
 			juejin_id: row.juejin_id
 		})
 		if (!err) {
@@ -152,9 +157,8 @@ export default class extends Vue {
 	}
 
 	async handleClickDeletepage(row) {
-    		const [err, result] = await PageModule.deletePageApi({
-			blogId: row.blogId,
-			juejin_id: row.juejin_id
+		const [err, result] = await PageModule.deletePageApi({
+			pageId: row.pageId
 		})
 		if (!err) {
 			this.handleGetLocalBlogList()
@@ -163,7 +167,7 @@ export default class extends Vue {
 
 	handleClickAddNewBlog() {
 		this.$router.push({
-			name: 'blogEdit',
+			name: 'blogAdd',
 			params: {
 			}
 		})
@@ -173,7 +177,7 @@ export default class extends Vue {
 		this.$router.push({
 			name: 'blogEdit',
 			params: {
-				id: row.blogId
+				id: row.pageId
 			}
 		})
 	}

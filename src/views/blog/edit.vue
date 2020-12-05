@@ -1,9 +1,12 @@
 <template>
   <div class="blog-edit">
     <div class="blog-header--action">
-      <el-button @click="handleSaveLocal">
-        保存到本地文件
+      <el-button @click="handleSave">
+        保存
       </el-button>
+      <!-- <el-button @click="handleSaveLocal">
+        保存到本地文件
+      </el-button> -->
       <el-button @click="handleClickPublishOwnBlog">
         发布到自己博客
       </el-button>
@@ -40,6 +43,7 @@ import { Vue, Component } from 'vue-property-decorator'
 import { Table } from 'element-ui'
 import VueMarkdown from 'vue-markdown'
 import { PageModule } from '@/store/modules/page'
+
 @Component({
 	name: 'Blog',
 	components: {
@@ -55,10 +59,16 @@ export default class extends Vue {
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
-		const blogId = this.$route.params.id
-		if (blogId) {
+		console.log('====================================')
+		console.log(`即将发请求`)
+		console.log('====================================')
+		const pageId = this.$route.params.id
+		console.log('====================================')
+		console.log(pageId)
+		console.log('====================================')
+		if (pageId) {
 			const params = {
-				blogId
+				pageId
 			}
 			const result = await PageModule.GetPageDetail(params)
 			this.detail = Object.assign({}, result)
@@ -78,36 +88,39 @@ export default class extends Vue {
 		})
 	}
 
-	async handleSaveLocal() {
+	async handleSave() {
 		console.log(`handleSaveLocal`)
-		const blogId = this.$route.params.id
-		if (blogId) {
-			const result = await PageModule.updatePageApi({
+		const pageId = this.$route.params.id
+		this.$prompt('请输入文章标题', '提示', {
+			confirmButtonText: '确定',
+			cancelButtonText: '取消',
+			inputErrorMessage: '文章标题格式不正确',
+			inputValue: this.detail.title,
+			closeOnClickModal: false
+		}).then(async({ value }) => {
+			const params = {
 				content: this.markdownData,
-				blogId
-			})
-		} else {
-			this.$prompt('请输入文章分类', '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				inputErrorMessage: '文章分类格式不正确'
-			}).then(async({ value }) => {
-				const result = await PageModule.addPageApi({
-					content: this.markdownData,
-					filepath: value
+				grouping: '前端',
+				title: value
+			}
+			if (pageId) {
+				await PageModule.updatePageApi({ ...params,
+					pageId
 				})
-			}).catch(() => {
-				this.$message({
-					type: 'info',
-					message: '取消输入'
-				})
+			} else {
+				await PageModule.addPageApi(params)
+			}
+		}).catch(() => {
+			this.$message({
+				type: 'info',
+				message: '取消输入'
 			})
-		}
+		})
 	}
 
 	async handlePublishJuejin() {
 		const result = await PageModule.publishJuejinBlogApi({
-			blogId: this.$route.params.id,
+			pageId: this.$route.params.id,
 			content: this.markdownData
 		})
 		this.handleGetLocalBlogList()
@@ -115,7 +128,7 @@ export default class extends Vue {
 
 	async handleUpdateuejin(row) {
 		const result = await PageModule.updateJuejinBlogApi({
-			blogId: this.$route.params.id,
+			pageId: this.$route.params.id,
 			juejin_id: this.detail.juejin_id
 		})
 		this.handleGetLocalBlogList()
@@ -123,7 +136,7 @@ export default class extends Vue {
 
 	async handleClickDeleteJuejin(row) {
 		const result = await PageModule.deleteJuejinBlogApi({
-			blogId: row.blogId,
+			pageId: row.pageId,
 			juejin_id: row.juejin_id
 		})
 		console.log(result)
