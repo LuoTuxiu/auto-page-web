@@ -59,6 +59,7 @@ export default new Router({
 				},
 				{
 					path: 'blog/list',
+					name: 'blogList',
 					component: () => import(/* webpackChunkName: "blog" */ '@/views/blog/list.vue'),
 					meta: {
 						title: 'blog',

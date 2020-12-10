@@ -10,6 +10,7 @@ import { getToken, setToken, removeToken } from '@/utils/cookies'
 import store from '@/store'
 import { gql } from '@apollo/client/core'
 import applloClient from '@/apollo'
+import { rebuildResult } from '@/middleware/graphqlFormat'
 
 export interface IUserState {
   token: string
@@ -58,7 +59,7 @@ class User extends VuexModule implements IUserState {
   	// let { name, password } = userInfo
   	// name = name.trim()
   	try {
-  		const { data } = await applloClient.mutate({
+  		const [err, result] = await rebuildResult(applloClient.mutate, 'login', {
   			mutation: gql`
 					mutation {
 						login(name: "${userInfo.name}", passwd: "${userInfo.passwd}") {
@@ -67,9 +68,12 @@ class User extends VuexModule implements IUserState {
 					}
 				`
   		})
-  		// console.log(`接口返回的 ${data.token}`)
-  		setToken(data.login.token)
-  		this.SET_TOKEN(data.login.token)
+  		if (!err) {
+  			const { token } = result
+  			// console.log(`接口返回的 ${data.token}`)
+  			setToken(token)
+  			this.SET_TOKEN(token)
+  		}
   	} catch (error) {
   		throw new Error(error)
   	}
@@ -78,7 +82,7 @@ class User extends VuexModule implements IUserState {
 	@Action
   public async Register(userInfo: any) {
   	try {
-  		const data = await applloClient.mutate({
+  		await rebuildResult(applloClient.mutate, 'register', {
   			mutation: gql`
 					mutation {
 						register(name: "${userInfo.name}", passwd: "${userInfo.passwd}") {
@@ -87,7 +91,6 @@ class User extends VuexModule implements IUserState {
 					}
 				`
   		})
-  		console.log(data)
   	} catch (error) {
   		console.warn(error)
   	}
@@ -108,7 +111,7 @@ class User extends VuexModule implements IUserState {
   	// const { data } = await getUserInfo({
   	// 	/* Your params here */
   	// })
-  	const { data } = await applloClient.query({
+  	const [err, result] = await rebuildResult(applloClient.query, 'userInfo', {
   		query: gql`
 			query {
 				userInfo {
@@ -118,18 +121,18 @@ class User extends VuexModule implements IUserState {
 			}
       `
   	})
-  	if (!data) {
-  		throw Error('Verification failed, please Login again.')
+  	if (!err) {
+  		// throw Error('Verification failed, please Login again.')
+  		const { roles, name, avatar, introduction } = result
+  		// roles must be a non-empty array
+  		if (!roles || roles.length <= 0) {
+  			throw Error('GetUserInfo: roles must be a non-null array!')
+  		}
+  		this.SET_ROLES(roles)
+  		this.SET_NAME(name)
+  		this.SET_AVATAR(avatar)
+  		this.SET_INTRODUCTION(introduction)
   	}
-  	const { roles, name, avatar, introduction } = data.userInfo
-  	// roles must be a non-empty array
-  	if (!roles || roles.length <= 0) {
-  		throw Error('GetUserInfo: roles must be a non-null array!')
-  	}
-  	this.SET_ROLES(roles)
-  	this.SET_NAME(name)
-  	this.SET_AVATAR(avatar)
-  	this.SET_INTRODUCTION(introduction)
   }
 
   @Action
@@ -138,7 +141,7 @@ class User extends VuexModule implements IUserState {
   		throw Error('LogOut: token is undefined!')
   	}
   	// await logout()
-  	const { data } = await applloClient.mutate({
+  	 await rebuildResult(applloClient.mutate, 'logout', {
   		mutation: gql`
 				mutation {
 					logout{
@@ -147,7 +150,6 @@ class User extends VuexModule implements IUserState {
 				}
 			`
   	})
-  	console.log(data)
   	removeToken()
   	this.SET_TOKEN('')
   	this.SET_ROLES([])

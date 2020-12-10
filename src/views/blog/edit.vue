@@ -104,6 +104,11 @@ export default class extends Vue {
 			} else {
 				await PageModule.addPageApi(params)
 			}
+			this.$router.push({
+				name: 'blogList',
+				params: {
+				}
+			})
 		}).catch(() => {
 			this.$message({
 				type: 'info',

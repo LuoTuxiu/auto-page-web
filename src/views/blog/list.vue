@@ -7,8 +7,14 @@
       <el-button @click="handleClickAddNewBlog">
         新建本地博客
       </el-button>
+      <el-button @click="handleGetLocalBlogList">
+        刷新
+      </el-button>
     </div>
-    <el-table :data="data">
+    <el-table
+      v-loading="loading"
+      :data="data"
+    >
       <!-- <el-table-column prop="pageId" label="pageId" /> -->
       <el-table-column
         prop="title"
@@ -108,85 +114,102 @@ import { PageModule } from '@/store/modules/page'
 })
 export default class extends Vue {
 	data = []
-	total = 0
+  total = 0
+  loading = false
 
-	mounted() {
-		this.handleGetLocalBlogList()
-	}
+  mounted() {
+  	this.handleGetLocalBlogList()
+  }
 
-	async handleGetLocalBlogList(propParams = {}) {
-		const params = {
-			page: 1,
-			limit: 10,
-			...propParams
-		}
-		const result = await PageModule.GetPageList(params)
-		console.log(result)
-		this.data = [].concat(result.list)
-		this.total = result.total
-	}
+  async handleGetLocalBlogList(propParams = {}) {
+  	this.loading = true
+  	const params = {
+  		page: 1,
+  		limit: 10,
+  		...propParams
+  	}
+  	console.log('====================================')
+  	console.log(`开始发list请求`)
+  	console.log('====================================')
+  	const [err, result] = await PageModule.GetPageList(params)
+  	console.log(result)
+  	if (!err) {
+  		this.data = [].concat(result.list)
+  		this.total = result.total
+  	} else {
+  		this.data = []
+  		this.total = 0
+  	}
+  	this.loading = false
+  }
 
-	handleCurrentChange(current) {
-		this.handleGetLocalBlogList({
-			page: current
-		})
-	}
+  handleCurrentChange(current) {
+  	this.handleGetLocalBlogList({
+  		page: current
+  	})
+  }
 
-	handleSizeChange(size) {
-		this.handleGetLocalBlogList({
-			limit: size
-		})
-	}
+  handleSizeChange(size) {
+  	this.handleGetLocalBlogList({
+  		limit: size
+  	})
+  }
 
-	async handleClickPublishJuejin(row) {
-		const result = await PageModule.publishJuejinBlogApi({
-			pageId: row.pageId,
-			content: row.content
-		})
-		console.log(result)
-		this.handleGetLocalBlogList()
-	}
+  async handleClickPublishJuejin(row) {
+  	const result = await PageModule.publishJuejinBlogApi({
+  		pageId: row.pageId,
+  		content: row.content
+  	})
+  	console.log(result)
+  	this.handleGetLocalBlogList()
+  }
 
-	async handleClickDeleteJuejin(row) {
-		const [err, result] = await PageModule.deleteJuejinBlogApi({
-			pageId: row.pageId,
-			juejin_id: row.juejin_id
-		})
-		if (!err) {
-			this.handleGetLocalBlogList()
-		}
-	}
+  async handleClickDeleteJuejin(row) {
+  	const [err, result] = await PageModule.deleteJuejinBlogApi({
+  		pageId: row.pageId,
+  		juejin_id: row.juejin_id
+  	})
+  	if (!err) {
+  		this.handleGetLocalBlogList()
+  	}
+  }
 
-	async handleClickDeletepage(row) {
-		const [err, result] = await PageModule.deletePageApi({
-			pageId: row.pageId
-		})
-		if (!err) {
-			this.handleGetLocalBlogList()
-		}
-	}
+  async handleClickDeletepage(row) {
+  	const [err, result] = await PageModule.deletePageApi({
+  		pageId: row.pageId
+  	})
+  	console.log('====================================')
+  	console.log(`handleClickDeletepage`)
+  	console.log('====================================')
+  	if (!err) {
+  		console.log('====================================')
+  		console.log(`即将刷新页面`)
+  		console.log('====================================')
+  		this.handleGetLocalBlogList()
+  	}
+  }
 
-	handleClickAddNewBlog() {
-		this.$router.push({
-			name: 'blogAdd',
-			params: {
-			}
-		})
-	}
+  handleClickAddNewBlog() {
+  	this.$router.push({
+  		name: 'blogAdd',
+  		params: {
+  		}
+  	})
+  }
 
-	handleClickEdit(row) {
-		this.$router.push({
-			name: 'blogEdit',
-			params: {
-				id: row.pageId
-			}
-		})
-	}
+  handleClickEdit(row) {
+  	this.$router.push({
+  		name: 'blogEdit',
+  		params: {
+  			id: row.pageId
+  		}
+  	})
+  }
 
-	async handleClickPublishOwnBlog() {
-		const result = await PageModule.UploadToOwnBlogApi()
-		console.log(result)
-	}
+  async handleClickPublishOwnBlog() {
+  	const result = await PageModule.UploadToOwnBlogApi()
+  	console.log(result)
+  }
 }
 </script>
 

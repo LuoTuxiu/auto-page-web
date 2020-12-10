@@ -8,6 +8,7 @@ import {
 import { gql } from '@apollo/client/core'
 import applloClient from '@/apollo'
 import store from '@/store'
+import { rebuildResult } from '@/middleware/graphqlFormat'
 
 export interface IPageState {
   list: []
@@ -24,7 +25,7 @@ class Page extends VuexModule implements IPageState {
   		limit: 10
   	}
   ) {
-  	const { data } = await applloClient.query({
+  	const result = await rebuildResult(applloClient.query, 'pageList', {
   		query: gql`
 				query {
 					pageList(page: ${params.page}, limit: ${params.limit}){
@@ -47,12 +48,12 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	return data.pageList
+  	return result
   }
 
   @Action
   public async GetPageDetail(params: any) {
-  	const { data } = await applloClient.query({
+  	const result = await rebuildResult(applloClient.query, 'pageDetail', {
   		query: gql`
 				query {
 					pageDetail(pageId: "${params.pageId}") {
@@ -65,7 +66,8 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	return data.pageDetail
+  	console.log(result)
+  	return result
   }
 
   @Action
@@ -103,8 +105,7 @@ class Page extends VuexModule implements IPageState {
   	rawError: true
 	})
   public async addPageApi(params: Page.AddPageType) {
-  	console.log(params)
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'addPage', {
   		mutation: gql`
 				mutation {
 					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", grouping: "${params.grouping || ''}"}) {
@@ -113,15 +114,14 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	console.log(data)
-  	return data
+  	return result
   }
 
 	@Action({
   	rawError: true
 	})
 	public async deletePageApi(params: any) {
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'deletePage', {
   		mutation: gql`
 				mutation {
 					deletePage(pageId: "${params.pageId || ''}") {
@@ -130,15 +130,14 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	console.log(data)
-  	return data
+  	return result
 	}
 
   @Action({
   	rawError: true
   })
 	public async publishJuejinBlogApi(params: any) {
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'publishJuejinBlog', {
   		variables: {
   			content: params.content,
   			pageId: params.pageId
@@ -157,7 +156,7 @@ class Page extends VuexModule implements IPageState {
   		// 	}
   		// `
   	})
-  	return data.publishJuejinBlog.data
+  	return result
 	}
 
 	@Action({
@@ -165,7 +164,7 @@ class Page extends VuexModule implements IPageState {
 	})
   public async updateJuejinBlogApi(params: any) {
   	console.log(params)
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'updateJuejinBlog', {
   		// variables: {
   		// 	content: params.content,
   		// 	pageId: params.pageId
@@ -184,13 +183,13 @@ class Page extends VuexModule implements IPageState {
   		// 	}
   		// `
   	})
-  	return data.publishJuejinBlog.data
+  	return result
   }
 
   @Action
 	public async deleteJuejinBlogApi(params: any) {
   	try {
-  		const { data } = await applloClient.mutate({
+  		const result = await rebuildResult(applloClient.mutate, 'deleteJuejinBlog', {
   			mutation: gql`
           mutation {
             deleteJuejinBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
@@ -199,7 +198,7 @@ class Page extends VuexModule implements IPageState {
           }
         `
   		})
-  		return [, data]
+  		return result
   	} catch (error) {
   		return [error]
   	}
