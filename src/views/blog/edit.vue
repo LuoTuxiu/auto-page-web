@@ -1,27 +1,39 @@
 <template>
   <div class="blog-edit">
     <div class="blog-header--action">
-      <el-button @click="handleSave">
-        保存
-      </el-button>
-      <!-- <el-button @click="handleSaveLocal">
+      <div>
+        <label
+          for=""
+          class="blog-title--label"
+        >文章标题</label>
+        <el-input
+          v-model="detail.title"
+          class="header-input--title"
+        />
+      </div>
+      <div>
+        <el-button @click="handleSave">
+          保存
+        </el-button>
+        <!-- <el-button @click="handleSaveLocal">
         保存到本地文件
       </el-button> -->
-      <el-button @click="handleClickPublishOwnBlog">
-        发布到自己博客
-      </el-button>
-      <el-button
-        v-if="detail.juejin_id"
-        @click="handleUpdateuejin"
-      >
-        编辑且发布掘金
-      </el-button>
-      <el-button
-        v-else
-        @click="handlePublishJuejin"
-      >
-        发布掘金
-      </el-button>
+        <el-button @click="handleClickPublishOwnBlog">
+          发布到自己博客
+        </el-button>
+        <el-button
+          v-if="detail.juejin_id"
+          @click="handleUpdateuejin"
+        >
+          编辑且发布掘金
+        </el-button>
+        <el-button
+          v-else
+          @click="handlePublishJuejin"
+        >
+          发布掘金
+        </el-button>
+      </div>
     </div>
     <div class="blog-edit--content">
       <div class="markdown-input">
@@ -64,7 +76,7 @@ export default class extends Vue {
 			const params = {
 				pageId
 			}
-			const result = await PageModule.GetPageDetail(params)
+			const [err, result] = await PageModule.GetPageDetail(params)
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
 		}
@@ -85,40 +97,40 @@ export default class extends Vue {
 	async handleSave() {
 		console.log(`handleSaveLocal`)
 		const pageId = this.$route.params.id
-		this.$prompt('请输入文章标题', '提示', {
-			confirmButtonText: '确定',
-			cancelButtonText: '取消',
-			inputErrorMessage: '文章标题格式不正确',
-			inputValue: this.detail.title,
-			closeOnClickModal: false
-		}).then(async({ value }) => {
-			const params = {
-				content: this.markdownData,
-				grouping: '前端',
-				title: value
-			}
-			if (pageId) {
-				await PageModule.updatePageApi({ ...params,
-					pageId
-				})
-			} else {
-				await PageModule.addPageApi(params)
-			}
-			this.$router.push({
-				name: 'blogList',
-				params: {
-				}
+		// this.$prompt('请输入文章标题', '提示', {
+		// 	confirmButtonText: '确定',
+		// 	cancelButtonText: '取消',
+		// 	inputErrorMessage: '文章标题格式不正确',
+		// 	inputValue: this.detail.title,
+		// 	closeOnClickModal: false
+		// }).then(async({ value }) => {
+		const params = {
+			content: this.markdownData,
+			grouping: '前端',
+			title: this.detail.title
+		}
+		if (pageId) {
+			await PageModule.updatePageApi({ ...params,
+				pageId
 			})
-		}).catch(() => {
-			this.$message({
-				type: 'info',
-				message: '取消输入'
-			})
+		} else {
+			await PageModule.addPageApi(params)
+		}
+		this.$router.push({
+			name: 'blogList',
+			params: {
+			}
 		})
+		// }).catch(() => {
+		// 	this.$message({
+		// 		type: 'info',
+		// 		message: '取消输入'
+		// 	})
+		// })
 	}
 
 	async handlePublishJuejin() {
-		const result = await PageModule.publishJuejinBlogApi({
+		const [err, result] = await PageModule.publishJuejinBlogApi({
 			pageId: this.$route.params.id,
 			content: this.markdownData
 		})
@@ -126,7 +138,7 @@ export default class extends Vue {
 	}
 
 	async handleUpdateuejin(row) {
-		const result = await PageModule.updateJuejinBlogApi({
+		await PageModule.updateJuejinBlogApi({
 			pageId: this.$route.params.id,
 			juejin_id: this.detail.juejin_id
 		})
@@ -134,16 +146,15 @@ export default class extends Vue {
 	}
 
 	async handleClickDeleteJuejin(row) {
-		const result = await PageModule.deleteJuejinBlogApi({
+		await PageModule.deleteJuejinBlogApi({
 			pageId: row.pageId,
 			juejin_id: row.juejin_id
 		})
-		console.log(result)
 		this.handleGetLocalBlogList()
 	}
 
 	async handleClickPublishOwnBlog() {
-		const result = await PageModule.UploadToOwnBlogApi()
+		await PageModule.UploadToOwnBlogApi()
 	}
 }
 </script>
@@ -151,6 +162,16 @@ export default class extends Vue {
 <style lang="scss" scoped>
 	.blog-edit {
 		padding: 20px;
+		.blog-header--action{
+			display: flex;
+			justify-content: space-between;
+			.blog-title--label{
+				margin-right: 10px;
+			}
+			.header-input--title{
+				width: 400px;
+			}
+		}
 	}
 	.blog-edit--content {
 		display: flex;
@@ -172,4 +193,11 @@ export default class extends Vue {
 			overflow-y: auto;
 		}
 	}
+</style>
+<style lang="scss">
+.blog-header--action{
+	.el-input{
+		width: 200px;
+	}
+}
 </style>
