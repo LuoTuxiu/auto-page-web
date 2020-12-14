@@ -3,7 +3,7 @@ interface GraphqlResponseType {
 	errors: any[] | undefined
 }
 
-const rebuildResult = async(next, path, ...args) => {
+const rebuildResult = async(next: Function, path: string, ...args: any[]) => {
 	try {
 		const { errors, data }: GraphqlResponseType = await next(...args)
 		if (errors) {
@@ -14,10 +14,10 @@ const rebuildResult = async(next, path, ...args) => {
 				data: error.data
 			}]
 		} else {
-			return [, data[path]]
+			return [null, data[path]]
 		}
 	} catch (error) {
-		console.log(error)
+		return [null, error]
 	}
 }
 

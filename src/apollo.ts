@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client/core'
+import { DefaultOptions } from '@apollo/client/core/ApolloClient'
 
 const defaultOptions: DefaultOptions = {
 	watchQuery: {
