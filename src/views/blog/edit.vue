@@ -134,7 +134,18 @@ export default class extends Vue {
 			pageId: this.$route.params.id,
 			content: this.markdownData
 		})
-		this.handleGetLocalBlogList()
+		if (!err) {
+			// this.handleGetLocalBlogList()
+			this.$message({
+				type: 'success',
+				message: '发布成功'
+			})
+		} else {
+			this.$message({
+				type: 'warning',
+				message: err.message
+			})
+		}
 	}
 
 	async handleUpdateuejin(row) {
