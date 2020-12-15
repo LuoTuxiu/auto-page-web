@@ -36,13 +36,20 @@
       </div>
     </div>
     <div class="blog-edit--content">
-      <div class="markdown-input">
-        <textarea
+      <div
+        id="markdown-input"
+        class="markdown-input"
+      >
+        <el-input
+          id="markdown-input--textarea"
           v-model="markdownData"
+          autosize
+          type="textarea"
           class="source markdown-input--textarea"
         />
       </div>
       <vue-markdown
+        id="vue-markdown--content"
         class="vue-markdown--content"
         :source="markdownData"
       />
@@ -66,7 +73,11 @@ export default class extends Vue {
 	markdownData = ''
 	detail = {}
 
+	destroyed() {
+		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
+	}
 	mounted() {
+		document.getElementById('markdown-input').addEventListener('scroll', this.handleInputScroll)
 		this.handleGetLocalBlogDetail()
 	}
 
@@ -80,6 +91,11 @@ export default class extends Vue {
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
 		}
+	}
+
+	handleInputScroll(event) {
+		const markdownContent = document.getElementById('vue-markdown--content')
+		markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
 	}
 
 	handleCurrentChange(current) {
@@ -130,7 +146,7 @@ export default class extends Vue {
 	}
 
 	async handlePublishJuejin() {
-		const [err, result] = await PageModule.publishJuejinBlogApi({
+		const [err] = await PageModule.publishJuejinBlogApi({
 			pageId: this.$route.params.id,
 			content: this.markdownData
 		})
@@ -149,11 +165,21 @@ export default class extends Vue {
 	}
 
 	async handleUpdateuejin(row) {
-		await PageModule.updateJuejinBlogApi({
+		const [err] = await PageModule.updateJuejinBlogApi({
 			pageId: this.$route.params.id,
 			juejin_id: this.detail.juejin_id
 		})
-		this.handleGetLocalBlogList()
+		if (!err) {
+			this.$message({
+				type: 'success',
+				message: '发布成功'
+			})
+		} else {
+			this.$message({
+				type: 'warning',
+				message: err.message
+			})
+		}
 	}
 
 	async handleClickDeleteJuejin(row) {
@@ -187,21 +213,25 @@ export default class extends Vue {
 	.blog-edit--content {
 		display: flex;
 		padding: 20px 0;
-		height: 100vh;
+		height: 90vh;
 		& > div {
 			flex: 1;
 			width: 50%;
 		}
 		.markdown-input {
 			margin-right: 20px;
+			overflow-y: auto;
 		}
-		.markdown-input--textarea {
-			width: 100%;
-			height: 100%;
-		}
+		// .markdown-input--textarea {
+		// 	width: 100%;
+		// 	height: 100%;
+		// }
 		.vue-markdown--content {
 			border: 1px solid rgb(118, 118, 118);
 			overflow-y: auto;
+			img{
+				width: 100%;
+			}
 		}
 	}
 </style>
