@@ -30,7 +30,7 @@ Vue.use(SvgIcon, {
 	defaultHeight: '1em'
 })
 
-Vue.filter('format', function(value: number) {
+Vue.filter('formatDate', function(value: number) {
 	return moment(Number(value)).format('YYYY-MM-DD HH:mm:ss')
 })
 

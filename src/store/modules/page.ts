@@ -8,6 +8,7 @@ import {
 import { gql } from '@apollo/client/core'
 import applloClient from '@/apollo'
 import store from '@/store'
+import { rebuildResult } from '@/middleware/graphqlFormat'
 
 export interface IPageState {
   list: []
@@ -24,18 +25,19 @@ class Page extends VuexModule implements IPageState {
   		limit: 10
   	}
   ) {
-  	const { data } = await applloClient.query({
+  	const result = await rebuildResult(applloClient.query, 'pageList', {
   		query: gql`
 				query {
 					pageList(page: ${params.page}, limit: ${params.limit}){
 						total
 						list {
-							blogId
+							pageId
 							url
 							title
 							content
 							endTime
 							updateTime
+							grouping
 							createTime
 							description
 							keyword
@@ -46,17 +48,17 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	return data.pageList
+  	return result
   }
 
   @Action
   public async GetPageDetail(params: any) {
-  	const { data } = await applloClient.query({
+  	const result = await rebuildResult(applloClient.query, 'pageDetail', {
   		query: gql`
 				query {
-					pageDetail(blogId: "${params.blogId}") {
+					pageDetail(pageId: "${params.pageId}") {
 						url
-						blogId
+						pageId
 						content
 						title
 						juejin_id
@@ -64,7 +66,8 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	return data.pageDetail
+  	console.log(result)
+  	return result
   }
 
   @Action
@@ -84,11 +87,11 @@ class Page extends VuexModule implements IPageState {
   @Action({
   	rawError: true
   })
-  public async updateToLocalApi(params: any) {
+  public async updatePageApi(params: any) {
   	const { data } = await applloClient.mutate({
   		mutation: gql`
 				mutation {
-					updateToLocal(blogId: "${params.blogId}", content: "${encodeURIComponent(params.content)}") {
+					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", content: "${encodeURIComponent(params.content)}") {
 						data
 					}
 				}
@@ -98,72 +101,104 @@ class Page extends VuexModule implements IPageState {
   	return data
   }
 
-  @Action({
+	@Action({
   	rawError: true
-  })
-  public async publishJuejinBlogApi(params: any) {
-  	const { data } = await applloClient.mutate({
-  		variables: {
-  			content: params.content,
-  			blogId: params.blogId
-  		},
+	})
+  public async addPageApi(params: Page.AddPageType) {
+  	const result = await rebuildResult(applloClient.mutate, 'addPage', {
   		mutation: gql`
 				mutation {
-					publishJuejinBlog(blogId: "${params.blogId}") {
+					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", grouping: "${params.grouping || ''}"}) {
 						data
 					}
 				}
 			`
-  		// mutation: gql`mutation($blogId: String!, $content: String!) {
-  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  	})
+  	return result
+  }
+
+	@Action({
+  	rawError: true
+	})
+	public async deletePageApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'deletePage', {
+  		mutation: gql`
+				mutation {
+					deletePage(pageId: "${params.pageId || ''}") {
+						data
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+  @Action({
+  	rawError: true
+  })
+	public async publishJuejinBlogApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'publishJuejinBlog', {
+  		variables: {
+  			content: params.content,
+  			pageId: params.pageId
+  		},
+  		mutation: gql`
+				mutation {
+					publishJuejinBlog(pageId: "${params.pageId}") {
+						data
+					}
+				}
+			`
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
   		// 			data
   		// 		}
   		// 	}
   		// `
   	})
-  	return data.publishJuejinBlog.data
-  }
+  	return result
+	}
 
 	@Action({
   	rawError: true
 	})
   public async updateJuejinBlogApi(params: any) {
   	console.log(params)
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'updateJuejinBlog', {
   		// variables: {
   		// 	content: params.content,
-  		// 	blogId: params.blogId
+  		// 	pageId: params.pageId
   		// },
   		mutation: gql`
 				mutation {
-					updateJuejinBlog(blogId: "${params.blogId}", juejin_id: "${params.juejin_id}") {
+					updateJuejinBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
 						data
 					}
 				}
 			`
-  		// mutation: gql`mutation($blogId: String!, $content: String!) {
-  		// 		publishJuejinBlog(blogId: $blogId, content: $content) {
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
   		// 			data
   		// 		}
   		// 	}
   		// `
   	})
-  	return data.publishJuejinBlog.data
+  	return result
   }
 
   @Action
 	public async deleteJuejinBlogApi(params: any) {
   	try {
-  		const { data } = await applloClient.mutate({
+  		const result = await rebuildResult(applloClient.mutate, 'deleteJuejinBlog', {
   			mutation: gql`
           mutation {
-            deleteJuejinBlog(blogId: "${params.blogId}", juejin_id: "${params.juejin_id}") {
+            deleteJuejinBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
               data
             }
           }
         `
   		})
-  		return [, data]
+  		return result
   	} catch (error) {
   		return [error]
   	}

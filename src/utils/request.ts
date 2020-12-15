@@ -24,7 +24,6 @@ service.interceptors.request.use(
 // Response interceptors
 service.interceptors.response.use(
 	response => {
-		debugger
 		const res = response.data
 		console.log(res)
 		if (res.code !== 200) {
