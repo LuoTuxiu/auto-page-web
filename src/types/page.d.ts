@@ -15,5 +15,9 @@ declare namespace Page {
 		grouping: string; // 分组
 		content: string;
 		title: string,
+  }
+
+  interface AddCategoryType {
+		'category_name': string;
 	}
 }

@@ -1,13 +1,10 @@
 <template>
   <div class="blog-list">
     <div>
-      <el-button @click="handleClickPublishOwnBlog">
-        发布到自己博客
-      </el-button>
       <el-button @click="handleClickAddNewBlog">
-        新建本地博客
+        新建Category
       </el-button>
-      <el-button @click="handleGetLocalBlogList">
+      <el-button @click="handleGetCategoryList">
         刷新
       </el-button>
     </div>
@@ -17,8 +14,8 @@
     >
       <!-- <el-table-column prop="pageId" label="pageId" /> -->
       <el-table-column
-        prop="title"
-        label="标题"
+        prop="category_name"
+        label="分类名称"
       />
       <!-- <el-table-column
         prop="keyword"
@@ -30,8 +27,8 @@
         width="200"
       /> -->
       <el-table-column
-        prop="grouping"
-        label="分组"
+        prop="category_id"
+        label="分类ID"
       />
       <!-- <el-table-column
         prop="originPath"
@@ -54,10 +51,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="juejin_id"
-        label="掘金id"
-      />
-      <el-table-column
         prop="operator"
         label="操作"
       >
@@ -68,22 +61,6 @@
             @click="handleClickEdit(scope.row)"
           >
             编辑
-          </el-button>
-          <el-button
-            v-if="!scope.row.juejin_id"
-            type="text"
-            size="small"
-            @click="handleClickPublishJuejin(scope.row)"
-          >
-            发布掘金
-          </el-button>
-          <el-button
-            v-if="scope.row.juejin_id"
-            type="text"
-            size="small"
-            @click="handleClickDeleteJuejin(scope.row)"
-          >
-            删除掘金
           </el-button>
           <el-button
             type="text"
@@ -108,6 +85,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { Table } from 'element-ui'
 import { PageModule } from '@/store/modules/page'
+import { log } from 'util'
 @Component({
 	name: 'Blog'
 })
@@ -117,17 +95,17 @@ export default class extends Vue {
   loading = false
 
   mounted() {
-  	this.handleGetLocalBlogList()
+  	this.handleGetCategoryList()
   }
 
-  async handleGetLocalBlogList(propParams = {}) {
+  async handleGetCategoryList(propParams = {}) {
   	this.loading = true
   	const params = {
   		page: 1,
   		limit: 10,
   		...propParams
   	}
-  	const [err, result] = await PageModule.getPageList(params)
+  	const [err, result] = await PageModule.getCategorysList(params)
   	if (!err) {
   		this.data = [].concat(result.list)
   		this.total = result.total
@@ -139,50 +117,23 @@ export default class extends Vue {
   }
 
   handleCurrentChange(current) {
-  	this.handleGetLocalBlogList({
+  	this.handleGetCategoryList({
   		page: current
   	})
   }
 
   handleSizeChange(size) {
-  	this.handleGetLocalBlogList({
+  	this.handleGetCategoryList({
   		limit: size
   	})
   }
 
-  async handleClickPublishJuejin(row) {
-  	const result = await PageModule.publishJuejinBlogApi({
-  		pageId: row.pageId,
-  		content: row.content
-  	})
-  	this.handleGetLocalBlogList()
-  }
-
-  async handleClickDeleteJuejin(row) {
-  	const [err] = await PageModule.deleteJuejinBlogApi({
-  		pageId: row.pageId,
-  		juejin_id: row.juejin_id
-  	})
-  	if (!err) {
-  		this.handleGetLocalBlogList()
-  		this.$message({
-  			type: 'success',
-  			message: '删除掘金博客成功'
-  		})
-  	} else {
-  		this.$message({
-  			type: 'warning',
-  			message: err.message
-  		})
-  	}
-  }
-
   async handleClickDeletepage(row) {
-  	const [err] = await PageModule.deletePageApi({
-  		pageId: row.pageId
+  	const [err] = await PageModule.deleteCategorysApi({
+  		category_id: row.category_id
   	})
   		if (!err) {
-  		this.handleGetLocalBlogList()
+  		this.handleGetCategoryList()
   		this.$message({
   			type: 'success',
   			message: '删除本地博客成功'
@@ -196,25 +147,42 @@ export default class extends Vue {
   }
 
   handleClickAddNewBlog() {
-  	this.$router.push({
-  		name: 'blogAdd',
-  		params: {
+  	const that = this
+  	this.$prompt('请输入分类', '提示', {
+  		confirmButtonText: '确定',
+  		cancelButtonText: '取消',
+  		closeOnClickModal: false
+  	}).then(async({ value }) => {
+  		const [err] = await PageModule.addCategory({
+  			category_name: value
+  		})
+  		if (!err) {
+  			that.handleGetCategoryList()
   		}
   	})
   }
 
   handleClickEdit(row) {
-  	this.$router.push({
-  		name: 'blogEdit',
-  		params: {
-  			id: row.pageId
+  		const that = this
+  	this.$prompt('请输入分类进行编辑', '提示', {
+  		confirmButtonText: '确定',
+  		cancelButtonText: '取消',
+  		inputValue: row.category_name,
+  		closeOnClickModal: false
+  	}).then(async({ value }) => {
+  		const [err] = await PageModule.updateCategoryApi({
+  			category_name: value,
+  			category_id: row.category_id
+  		})
+  		if (!err) {
+  			that.handleGetCategoryList()
   		}
+  	}).catch((e) => {
+  		this.$message({
+  			type: 'info',
+  			message: '取消输入'
+  		})
   	})
-  }
-
-  async handleClickPublishOwnBlog() {
-  	const result = await PageModule.UploadToOwnBlogApi()
-  	console.log(result)
   }
 }
 </script>

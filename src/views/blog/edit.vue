@@ -87,7 +87,7 @@ export default class extends Vue {
 			const params = {
 				pageId
 			}
-			const [err, result] = await PageModule.GetPageDetail(params)
+			const [err, result] = await PageModule.getPageDetail(params)
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
 		}

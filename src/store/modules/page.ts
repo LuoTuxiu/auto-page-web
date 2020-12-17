@@ -19,7 +19,7 @@ class Page extends VuexModule implements IPageState {
   public list: any = ''
 
   @Action
-  public async GetPageList(
+  public async getPageList(
   	params = {
   		page: 1,
   		limit: 10
@@ -52,7 +52,7 @@ class Page extends VuexModule implements IPageState {
   }
 
   @Action
-  public async GetPageDetail(params: any) {
+  public async getPageDetail(params: any) {
   	const result = await rebuildResult(applloClient.query, 'pageDetail', {
   		query: gql`
 				query {
@@ -202,6 +202,81 @@ class Page extends VuexModule implements IPageState {
   	} catch (error) {
   		return [error]
   	}
+	}
+
+	@Action({
+  	rawError: true
+	})
+  public async addCategory(params: Page.AddCategoryType) {
+  	const result = await rebuildResult(applloClient.mutate, 'addCategory', {
+  		mutation: gql`
+				mutation {
+					addCategory(input: {category_name: "${params.category_name}"}) {
+						data
+					}
+				}
+			`
+  	})
+  	return result
+  }
+
+	@Action
+	public async getCategorysList(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'categoryList', {
+  		query: gql`
+				query {
+					categoryList(page: ${params.page}, limit: ${params.limit}){
+						total
+						list {
+							updateTime
+							createTime
+							category_name
+							category_id
+						}
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+	@Action({
+  	rawError: true
+	})
+	public async updateCategoryApi(params: any) {
+  	const { data } = await applloClient.mutate({
+  		mutation: gql`
+				mutation {
+					updateCategory(category_name: "${params.category_name}", category_id: "${params.category_id || ''}") {
+						data
+					}
+				}
+			`
+  	})
+  	console.log(data)
+  	return data
+	}
+
+	@Action({
+  	rawError: true
+	})
+	public async deleteCategorysApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'deleteCategory', {
+  		mutation: gql`
+				mutation {
+					deleteCategory(category_id: "${params.category_id || ''}") {
+						data
+					}
+				}
+			`
+		})
+		console.log(result)
+  	return result
 	}
 }
 
