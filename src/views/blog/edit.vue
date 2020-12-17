@@ -151,7 +151,7 @@ export default class extends Vue {
 			content: this.markdownData
 		})
 		if (!err) {
-			// this.handleGetLocalBlogList()
+			this.handleGetLocalBlogDetail()
 			this.$message({
 				type: 'success',
 				message: '发布成功'
@@ -206,7 +206,7 @@ export default class extends Vue {
 				margin-right: 10px;
 			}
 			.header-input--title{
-				width: 400px;
+				width: 500px;
 			}
 		}
 	}

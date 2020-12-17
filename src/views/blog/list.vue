@@ -38,14 +38,6 @@
         label="原始路径"
       /> -->
       <el-table-column
-        prop="createTime"
-        label="创建时间"
-      >
-        <template slot-scope="scope">
-          <span> {{ scope.row.createTime | formatDate }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column
         prop="updateTime"
         label="更新时间"
       >
@@ -53,7 +45,14 @@
           <span> {{ scope.row.updateTime | formatDate }} </span>
         </template>
       </el-table-column>
-
+      <el-table-column
+        prop="createTime"
+        label="创建时间"
+      >
+        <template slot-scope="scope">
+          <span> {{ scope.row.createTime | formatDate }} </span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="juejin_id"
         label="掘金id"
@@ -97,7 +96,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      layout="sizes, prev, pager, next"
+      layout="total, sizes, prev, pager, next"
       :total="total"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -128,11 +127,7 @@ export default class extends Vue {
   		limit: 10,
   		...propParams
   	}
-  	console.log('====================================')
-  	console.log(`开始发list请求`)
-  	console.log('====================================')
   	const [err, result] = await PageModule.GetPageList(params)
-  	console.log(result)
   	if (!err) {
   		this.data = [].concat(result.list)
   		this.total = result.total
@@ -160,32 +155,43 @@ export default class extends Vue {
   		pageId: row.pageId,
   		content: row.content
   	})
-  	console.log(result)
   	this.handleGetLocalBlogList()
   }
 
   async handleClickDeleteJuejin(row) {
-  	const [err, result] = await PageModule.deleteJuejinBlogApi({
+  	const [err] = await PageModule.deleteJuejinBlogApi({
   		pageId: row.pageId,
   		juejin_id: row.juejin_id
   	})
   	if (!err) {
   		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除掘金博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
   	}
   }
 
   async handleClickDeletepage(row) {
-  	const [err, result] = await PageModule.deletePageApi({
+  	const [err] = await PageModule.deletePageApi({
   		pageId: row.pageId
   	})
-  	console.log('====================================')
-  	console.log(`handleClickDeletepage`)
-  	console.log('====================================')
-  	if (!err) {
-  		console.log('====================================')
-  		console.log(`即将刷新页面`)
-  		console.log('====================================')
+  		if (!err) {
   		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除本地博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
   	}
   }
 
