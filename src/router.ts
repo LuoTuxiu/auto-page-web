@@ -54,8 +54,8 @@ export default new Router({
 					name: 'category',
 					component: () => import(/* webpackChunkName: "blog" */ '@/views/category/list.vue'),
 					meta: {
-						title: 'category',
-						icon: 'category'
+						title: '分类列表',
+						icon: ''
 					}
 				},
 				{
@@ -63,8 +63,8 @@ export default new Router({
 					name: 'blogList',
 					component: () => import(/* webpackChunkName: "blog" */ '@/views/blog/list.vue'),
 					meta: {
-						title: 'blog',
-						icon: 'blog'
+						title: '博客列表',
+						icon: ''
 					}
 				},
 				{

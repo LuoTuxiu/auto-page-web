@@ -30,7 +30,7 @@
           </router-link>
           <a
             target="_blank"
-            href="https://github.com/armour/vue-typescript-admin-template/"
+            href="https://github.com/LuoTuxiu"
           >
             <el-dropdown-item>
               Github
@@ -38,10 +38,10 @@
           </a>
           <a
             target="_blank"
-            href="https://armour.github.io/vue-typescript-admin-docs/"
+            href="https://www.luotuxiu.cn/"
           >
             <el-dropdown-item>
-              Docs
+              Blog
             </el-dropdown-item>
           </a>
           <el-dropdown-item divided>
