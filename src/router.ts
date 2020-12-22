@@ -43,20 +43,12 @@ export default new Router({
 		{
 			path: '/',
 			component: Layout,
-			redirect: '/dashboard',
+			redirect: '/blog/list',
 			meta: {
 				title: 'Dashboard',
 				icon: 'dashboard'
 			},
 			children: [
-				{
-					path: 'dashboard',
-					component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
-					meta: {
-						title: 'Dashboard',
-						icon: 'dashboard'
-					}
-				},
 				{
 					path: 'category/list',
 					name: 'category',
@@ -82,7 +74,8 @@ export default new Router({
 					meta: {
 						title: 'edit',
 						icon: 'blog'
-					}
+					},
+					hidden: true
 				},
 				{
 					path: 'blog/add',
@@ -91,7 +84,8 @@ export default new Router({
 					meta: {
 						title: 'edit',
 						icon: 'blog'
-					}
+					},
+					hidden: true
 				}
 			]
 		},
