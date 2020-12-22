@@ -125,18 +125,26 @@ export default class extends Vue {
 			grouping: '前端',
 			title: this.detail.title
 		}
+		let err
 		if (pageId) {
-			await PageModule.updatePageApi({ ...params,
+			[err] = await PageModule.updatePageApi({ ...params,
 				pageId
 			})
 		} else {
-			await PageModule.addPageApi(params)
+			[err] = await PageModule.addPageApi(params)
 		}
-		this.$router.push({
-			name: 'blogList',
-			params: {
-			}
-		})
+		if (!err) {
+			this.$router.push({
+				name: 'blogList',
+				params: {
+				}
+			})
+		} else {
+			this.$message({
+				type: 'warning',
+				message: err.message
+			})
+		}
 		// }).catch(() => {
 		// 	this.$message({
 		// 		type: 'info',

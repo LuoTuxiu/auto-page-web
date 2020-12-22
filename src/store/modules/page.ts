@@ -249,7 +249,7 @@ class Page extends VuexModule implements IPageState {
   	rawError: true
 	})
 	public async updateCategoryApi(params: any) {
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'updateCategory', {
   		mutation: gql`
 				mutation {
 					updateCategory(category_name: "${params.category_name}", category_id: "${params.category_id || ''}") {
@@ -258,8 +258,7 @@ class Page extends VuexModule implements IPageState {
 				}
 			`
   	})
-  	console.log(data)
-  	return data
+  	return result
 	}
 
 	@Action({
