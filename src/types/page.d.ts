@@ -12,7 +12,7 @@ declare namespace Page {
 	}
 
 	interface AddPageType {
-		grouping: string; // 分组
+		category_id: string; // 分类
 		content: string;
 		title: string,
   }

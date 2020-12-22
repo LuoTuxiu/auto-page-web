@@ -72,7 +72,7 @@ export default new Router({
 					name: 'blogEdit',
 					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
 					meta: {
-						title: 'edit',
+						title: '编辑博客',
 						icon: 'blog'
 					},
 					hidden: true
@@ -82,7 +82,7 @@ export default new Router({
 					name: 'blogAdd',
 					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
 					meta: {
-						title: 'edit',
+						title: '新增博客',
 						icon: 'blog'
 					},
 					hidden: true

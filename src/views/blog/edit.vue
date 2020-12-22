@@ -11,10 +11,35 @@
           class="header-input--title"
         />
       </div>
-      <div>
-        <el-button @click="handleSave">
-          保存
-        </el-button>
+      <div class="blog-action">
+        <el-popover
+          placement="bottom"
+          width="400"
+          trigger="click"
+          @show="handleGetAllCategory"
+        >
+          <div>
+            <div class="category-list">
+              <el-radio
+                v-for="item in category"
+                :key="item.category_id"
+                v-model="selectCategory"
+                :label="item.category_id"
+                size="medium"
+              >
+                {{ item.category_name }}
+              </el-radio>
+            </div>
+            <div class="category-list--action">
+              <el-button @click="handleSave">
+                保存
+              </el-button>
+            </div>
+          </div>
+          <el-button slot="reference">
+            保存
+          </el-button>
+        </el-popover>
         <!-- <el-button @click="handleSaveLocal">
         保存到本地文件
       </el-button> -->
@@ -72,6 +97,8 @@ import { PageModule } from '@/store/modules/page'
 export default class extends Vue {
 	markdownData = ''
 	detail = {}
+	category = []
+	selectCategory = ''
 
 	destroyed() {
 		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
@@ -91,6 +118,11 @@ export default class extends Vue {
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
 		}
+	}
+
+	async handleGetAllCategory(propParams = {}) {
+		const [err, result] = await PageModule.getCategorysAll()
+		this.category = [].concat(result.list)
 	}
 
 	handleInputScroll(event) {
@@ -113,16 +145,9 @@ export default class extends Vue {
 	async handleSave() {
 		console.log(`handleSaveLocal`)
 		const pageId = this.$route.params.id
-		// this.$prompt('请输入文章标题', '提示', {
-		// 	confirmButtonText: '确定',
-		// 	cancelButtonText: '取消',
-		// 	inputErrorMessage: '文章标题格式不正确',
-		// 	inputValue: this.detail.title,
-		// 	closeOnClickModal: false
-		// }).then(async({ value }) => {
 		const params = {
 			content: this.markdownData,
-			grouping: '前端',
+			category_id: this.selectCategory,
 			title: this.detail.title
 		}
 		let err
@@ -217,7 +242,24 @@ export default class extends Vue {
 				width: 500px;
 			}
 		}
+			.blog-action{
+			& > button {
+				margin-left: 10px;
+			}
+		}
 	}
+	.category-list{
+		display: flex;
+		margin: 10px 0;
+		flex-wrap: wrap;
+		&> label {
+			margin-bottom: 2px;
+		}
+	}
+		.category-list--action{
+			    display: flex;
+    justify-content: flex-end;
+		}
 	.blog-edit--content {
 		display: flex;
 		padding: 20px 0;
@@ -241,6 +283,7 @@ export default class extends Vue {
 				width: 100%;
 			}
 		}
+
 	}
 </style>
 <style lang="scss">

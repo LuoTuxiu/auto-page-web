@@ -37,7 +37,10 @@ class Page extends VuexModule implements IPageState {
 							content
 							endTime
 							updateTime
-							grouping
+							category {
+								category_id
+								category_name
+							}
 							createTime
 							description
 							keyword
@@ -62,6 +65,10 @@ class Page extends VuexModule implements IPageState {
 						content
 						title
 						juejin_id
+						category {
+							category_id
+							category_name
+						}
 					}
 				}
 			`
@@ -88,17 +95,16 @@ class Page extends VuexModule implements IPageState {
   	rawError: true
   })
   public async updatePageApi(params: any) {
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'updatePage', {
   		mutation: gql`
 				mutation {
-					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", content: "${encodeURIComponent(params.content)}") {
+					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", category_id: "${params.category_id || ''}", content: "${encodeURIComponent(params.content)}") {
 						data
 					}
 				}
 			`
   	})
-  	console.log(data)
-  	return data
+  	return result
   }
 
 	@Action({
@@ -108,7 +114,7 @@ class Page extends VuexModule implements IPageState {
   	const result = await rebuildResult(applloClient.mutate, 'addPage', {
   		mutation: gql`
 				mutation {
-					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", grouping: "${params.grouping || ''}"}) {
+					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", category_id: "${params.category_id || ''}"}) {
 						data
 					}
 				}
@@ -231,6 +237,31 @@ class Page extends VuexModule implements IPageState {
   		query: gql`
 				query {
 					categoryList(page: ${params.page}, limit: ${params.limit}){
+						total
+						list {
+							updateTime
+							createTime
+							category_name
+							category_id
+						}
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+	@Action
+	public async getCategorysAll(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'categoryAll', {
+  		query: gql`
+				query {
+					categoryAll{
 						total
 						list {
 							updateTime

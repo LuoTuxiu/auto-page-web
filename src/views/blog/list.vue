@@ -30,8 +30,8 @@
         width="200"
       /> -->
       <el-table-column
-        prop="grouping"
-        label="分组"
+        prop="category.category_name"
+        label="分类"
       />
       <!-- <el-table-column
         prop="originPath"
