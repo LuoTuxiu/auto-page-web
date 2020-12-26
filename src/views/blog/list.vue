@@ -86,6 +86,22 @@
             删除掘金
           </el-button>
           <el-button
+            v-if="!scope.row.juejin_id"
+            type="text"
+            size="small"
+            @click="handleClickPublishJianshu(scope.row)"
+          >
+            发布简书
+          </el-button>
+          <el-button
+            v-if="scope.row.juejin_id"
+            type="text"
+            size="small"
+            @click="handleClickDeleteJianshu(scope.row)"
+          >
+            删除简书
+          </el-button>
+          <el-button
             type="text"
             size="small"
             @click="handleClickDeletepage(scope.row)"
@@ -160,6 +176,44 @@ export default class extends Vue {
 
   async handleClickDeleteJuejin(row) {
   	const [err] = await PageModule.deleteJuejinBlogApi({
+  		pageId: row.pageId,
+  		juejin_id: row.juejin_id
+  	})
+  	if (!err) {
+  		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除掘金博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickPublishJianshu(row) {
+  	const [err, result] = await PageModule.publishJianshuBlogApi({
+  		pageId: row.pageId,
+  		content: row.content
+  	})
+  	if (!err) {
+  	  	this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '发布简书博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickDeleteJianshu(row) {
+  	const [err] = await PageModule.deleteJianshuBlogApi({
   		pageId: row.pageId,
   		juejin_id: row.juejin_id
   	})

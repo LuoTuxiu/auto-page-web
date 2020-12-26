@@ -308,6 +308,50 @@ class Page extends VuexModule implements IPageState {
 		console.log(result)
   	return result
 	}
+
+	@Action({
+  	rawError: true
+	})
+	public async publishJianshuBlogApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'publishJianshuBlog', {
+  		variables: {
+  			content: params.content,
+  			pageId: params.pageId
+  		},
+  		mutation: gql`
+				mutation {
+					publishJianshuBlog(pageId: "${params.pageId}") {
+						data
+					}
+				}
+			`
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
+  		// 			data
+  		// 		}
+  		// 	}
+  		// `
+  	})
+  	return result
+	}
+
+	@Action
+	public async deleteJianshuBlogApi(params: any) {
+  	try {
+  		const result = await rebuildResult(applloClient.mutate, 'deleteJianshuBlog', {
+  			mutation: gql`
+          mutation {
+            deleteJianshuBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
+              data
+            }
+          }
+        `
+  		})
+  		return result
+  	} catch (error) {
+  		return [error]
+  	}
+	}
 }
 
 export const PageModule = getModule(Page)

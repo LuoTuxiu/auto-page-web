@@ -58,6 +58,13 @@
           <el-button
             type="text"
             size="small"
+            @click="handleAddNewJianshu(scope.row)"
+          >
+            新建简书博客
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
             @click="handleClickEdit(scope.row)"
           >
             编辑
@@ -96,6 +103,24 @@ export default class extends Vue {
 
   mounted() {
   	this.handleGetCategoryList()
+  }
+
+  async handleAddNewJianshu(row) {
+  	const [err] = await PageModule.deleteCategorysApi({
+  		category_id: row.category_id
+  	})
+  		if (!err) {
+  		this.handleGetCategoryList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除本地博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
   }
 
   async handleGetCategoryList(propParams = {}) {
