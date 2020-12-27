@@ -1,15 +1,51 @@
 <template>
   <div class="blog-list">
     <div>
+      <el-form
+        :inline="true"
+        :model="filterForm"
+        class="demo-form-inline"
+      >
+        <el-form-item label="标题">
+          <el-input
+            v-model="filterForm.keyword"
+            placeholder="请输入标题"
+            clearable
+          />
+        </el-form-item>
+        <!-- <el-form-item label="活动区域">
+          <el-select
+            v-model="formInline.region"
+            placeholder="活动区域"
+          >
+            <el-option
+              label="区域一"
+              value="shanghai"
+            />
+            <el-option
+              label="区域二"
+              value="beijing"
+            />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button
+            type="primary"
+            @click="handleGetLocalBlogList"
+          >
+            查询
+          </el-button>
+        </el-form-item>
+      </el-form>
       <el-button @click="handleClickPublishOwnBlog">
         发布到自己博客
       </el-button>
       <el-button @click="handleClickAddNewBlog">
         新建本地博客
       </el-button>
-      <el-button @click="handleGetLocalBlogList">
+      <!-- <el-button @click="handleGetLocalBlogList">
         刷新
-      </el-button>
+      </el-button> -->
     </div>
     <el-table
       v-loading="loading"
@@ -56,6 +92,10 @@
       <el-table-column
         prop="juejin_id"
         label="掘金id"
+      />
+      <el-table-column
+        prop="jianshu_id"
+        label="简书id"
       />
       <el-table-column
         prop="operator"
@@ -131,6 +171,7 @@ export default class extends Vue {
 	data = []
   total = 0
   loading = false
+  filterForm = {}
 
   mounted() {
   	this.handleGetLocalBlogList()
@@ -140,7 +181,8 @@ export default class extends Vue {
   	this.loading = true
   	const params = {
   		page: 1,
-  		limit: 10,
+  		limit: 100,
+  		keyword: this.filterForm.keyword,
   		...propParams
   	}
   	const [err, result] = await PageModule.getPageList(params)

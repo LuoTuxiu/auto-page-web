@@ -18,17 +18,20 @@ export interface IPageState {
 class Page extends VuexModule implements IPageState {
   public list: any = ''
 
-  @Action
+	@Action({
+  	rawError: true
+	})
   public async getPageList(
   	params = {
   		page: 1,
-  		limit: 10
+  		limit: 10,
+  		keyword: ''
   	}
   ) {
   	const result = await rebuildResult(applloClient.query, 'pageList', {
   		query: gql`
 				query {
-					pageList(page: ${params.page}, limit: ${params.limit}){
+					pageList(page: ${params.page}, limit: ${params.limit}, keyword: "${params.keyword || ''}"){
 						total
 						list {
 							pageId
@@ -46,6 +49,9 @@ class Page extends VuexModule implements IPageState {
 							keyword
 							originPath
 							juejin_id
+							jianshu_id
+							juejin_updateTime
+							jianshu_updateTime
 						}
 					}
 				}
@@ -55,7 +61,7 @@ class Page extends VuexModule implements IPageState {
   }
 
   @Action
-  public async getPageDetail(params: any) {
+	public async getPageDetail(params: any) {
   	const result = await rebuildResult(applloClient.query, 'pageDetail', {
   		query: gql`
 				query {
@@ -66,8 +72,8 @@ class Page extends VuexModule implements IPageState {
 						title
 						juejin_id
 						category {
-							category_id
 							category_name
+							_id
 						}
 					}
 				}
@@ -75,7 +81,7 @@ class Page extends VuexModule implements IPageState {
   	})
   	console.log(result)
   	return result
-  }
+	}
 
   @Action
   public async UploadToOwnBlogApi(params = {}) {
