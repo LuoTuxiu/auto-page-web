@@ -68,6 +68,15 @@ export default new Router({
 					}
 				},
 				{
+					path: 'jianshu/list',
+					name: 'jianshu',
+					component: () => import(/* webpackChunkName: "blog" */ '@/views/jianshu/list.vue'),
+					meta: {
+						title: '简书列表',
+						icon: ''
+					}
+				},
+				{
 					path: 'blog/edit/:id',
 					name: 'blogEdit',
 					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),

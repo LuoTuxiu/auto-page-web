@@ -6,10 +6,10 @@
         :model="filterForm"
         class="demo-form-inline"
       >
-        <el-form-item label="标题">
+        <el-form-item label="关键字">
           <el-input
             v-model="filterForm.keyword"
-            placeholder="请输入标题"
+            placeholder="请输入关键字"
             clearable
           />
         </el-form-item>
@@ -263,7 +263,7 @@ export default class extends Vue {
   		this.handleGetLocalBlogList()
   		this.$message({
   			type: 'success',
-  			message: '删除掘金博客成功'
+  			message: '删除简书博客成功'
   		})
   	} else {
   		this.$message({

@@ -99,12 +99,18 @@ export default class extends Vue {
 	detail = {}
 	category = []
 	selectCategory = ''
+	isInputScroll = false
+	currentMouseElement = null
 
 	destroyed() {
 		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
 	}
 	mounted() {
 		document.getElementById('markdown-input').addEventListener('scroll', this.handleInputScroll)
+		document.getElementById('vue-markdown--content').addEventListener('scroll', this.handlePreViewScroll)
+		window.document.body.onmouseover = (event) => {
+			this.currentMouseElement = event.target
+		}
 		this.handleGetLocalBlogDetail()
 	}
 
@@ -127,8 +133,17 @@ export default class extends Vue {
 	}
 
 	handleInputScroll(event) {
-		const markdownContent = document.getElementById('vue-markdown--content')
-		markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		if (event.target.contains(this.currentMouseElement)) {
+			const markdownContent = document.getElementById('vue-markdown--content')
+			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		}
+	}
+
+	handlePreViewScroll(event) {
+		if (event.target.contains(this.currentMouseElement)) {
+			const markdownContent = document.getElementById('markdown-input')
+			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		}
 	}
 
 	handleCurrentChange(current) {
@@ -280,6 +295,7 @@ export default class extends Vue {
 		.vue-markdown--content {
 			border: 1px solid rgb(118, 118, 118);
 			overflow-y: auto;
+			padding: 10px;
 			img{
 				width: 100%;
 			}
@@ -293,4 +309,22 @@ export default class extends Vue {
 		width: 200px;
 	}
 }
+code {
+	font-size: 12px;
+    padding: 15px 12px;
+    margin: 0;
+    word-break: normal;
+    display: block;
+    overflow-x: auto;
+    color: #333;
+    background: #f8f8f8;
+
+}
+.vue-markdown--content {
+			a {
+			    color: #275b8c;
+					    border-bottom: 1px solid #d1e9ff;
+		}
+}
+
 </style>

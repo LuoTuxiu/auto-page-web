@@ -347,7 +347,7 @@ class Page extends VuexModule implements IPageState {
   		const result = await rebuildResult(applloClient.mutate, 'deleteJianshuBlog', {
   			mutation: gql`
           mutation {
-            deleteJianshuBlog(pageId: "${params.pageId}", juejin_id: "${params.juejin_id}") {
+            deleteJianshuBlog(pageId: "${params.pageId}", jianshu_id: "${params.jianshu_id}") {
               data
             }
           }
@@ -357,6 +357,31 @@ class Page extends VuexModule implements IPageState {
   	} catch (error) {
   		return [error]
   	}
+	}
+
+	@Action
+	public async getJianshuList(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'jianshuList', {
+  		query: gql`
+				query {
+					jianshuList{
+						list {
+							notebook_id
+							paid
+							title
+							content_updated_at
+							id
+						}
+					}
+				}
+			`
+  	})
+  	return result
 	}
 }
 
