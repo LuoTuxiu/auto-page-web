@@ -18,17 +18,20 @@ export interface IPageState {
 class Page extends VuexModule implements IPageState {
   public list: any = ''
 
-  @Action
-  public async GetPageList(
+	@Action({
+  	rawError: true
+	})
+  public async getPageList(
   	params = {
   		page: 1,
-  		limit: 10
+  		limit: 10,
+  		keyword: ''
   	}
   ) {
   	const result = await rebuildResult(applloClient.query, 'pageList', {
   		query: gql`
 				query {
-					pageList(page: ${params.page}, limit: ${params.limit}){
+					pageList(page: ${params.page}, limit: ${params.limit}, keyword: "${params.keyword || ''}"){
 						total
 						list {
 							pageId
@@ -37,12 +40,18 @@ class Page extends VuexModule implements IPageState {
 							content
 							endTime
 							updateTime
-							grouping
+							category {
+								category_id
+								category_name
+							}
 							createTime
 							description
 							keyword
 							originPath
 							juejin_id
+							jianshu_id
+							juejin_updateTime
+							jianshu_updateTime
 						}
 					}
 				}
@@ -52,7 +61,7 @@ class Page extends VuexModule implements IPageState {
   }
 
   @Action
-  public async GetPageDetail(params: any) {
+	public async getPageDetail(params: any) {
   	const result = await rebuildResult(applloClient.query, 'pageDetail', {
   		query: gql`
 				query {
@@ -62,13 +71,17 @@ class Page extends VuexModule implements IPageState {
 						content
 						title
 						juejin_id
+						category {
+							category_name
+							_id
+						}
 					}
 				}
 			`
   	})
   	console.log(result)
   	return result
-  }
+	}
 
   @Action
   public async UploadToOwnBlogApi(params = {}) {
@@ -88,17 +101,16 @@ class Page extends VuexModule implements IPageState {
   	rawError: true
   })
   public async updatePageApi(params: any) {
-  	const { data } = await applloClient.mutate({
+  	const result = await rebuildResult(applloClient.mutate, 'updatePage', {
   		mutation: gql`
 				mutation {
-					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", content: "${encodeURIComponent(params.content)}") {
+					updatePage(title: "${params.title}", pageId: "${params.pageId || ''}", category_id: "${params.category_id || ''}", content: "${encodeURIComponent(params.content)}") {
 						data
 					}
 				}
 			`
   	})
-  	console.log(data)
-  	return data
+  	return result
   }
 
 	@Action({
@@ -108,7 +120,7 @@ class Page extends VuexModule implements IPageState {
   	const result = await rebuildResult(applloClient.mutate, 'addPage', {
   		mutation: gql`
 				mutation {
-					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", grouping: "${params.grouping || ''}"}) {
+					addPage(input: {title: "${params.title}", content: "${encodeURIComponent(params.content)}", category_id: "${params.category_id || ''}"}) {
 						data
 					}
 				}
@@ -202,6 +214,174 @@ class Page extends VuexModule implements IPageState {
   	} catch (error) {
   		return [error]
   	}
+	}
+
+	@Action({
+  	rawError: true
+	})
+  public async addCategory(params: Page.AddCategoryType) {
+  	const result = await rebuildResult(applloClient.mutate, 'addCategory', {
+  		mutation: gql`
+				mutation {
+					addCategory(input: {category_name: "${params.category_name}"}) {
+						data
+					}
+				}
+			`
+  	})
+  	return result
+  }
+
+	@Action
+	public async getCategorysList(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'categoryList', {
+  		query: gql`
+				query {
+					categoryList(page: ${params.page}, limit: ${params.limit}){
+						total
+						list {
+							updateTime
+							createTime
+							category_name
+							category_id
+						}
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+	@Action
+	public async getCategorysAll(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'categoryAll', {
+  		query: gql`
+				query {
+					categoryAll{
+						total
+						list {
+							updateTime
+							createTime
+							category_name
+							category_id
+						}
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+	@Action({
+  	rawError: true
+	})
+	public async updateCategoryApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'updateCategory', {
+  		mutation: gql`
+				mutation {
+					updateCategory(category_name: "${params.category_name}", category_id: "${params.category_id || ''}") {
+						data
+					}
+				}
+			`
+  	})
+  	return result
+	}
+
+	@Action({
+  	rawError: true
+	})
+	public async deleteCategorysApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'deleteCategory', {
+  		mutation: gql`
+				mutation {
+					deleteCategory(category_id: "${params.category_id || ''}") {
+						data
+					}
+				}
+			`
+		})
+		console.log(result)
+  	return result
+	}
+
+	@Action({
+  	rawError: true
+	})
+	public async publishJianshuBlogApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'publishJianshuBlog', {
+  		variables: {
+  			content: params.content,
+  			pageId: params.pageId
+  		},
+  		mutation: gql`
+				mutation {
+					publishJianshuBlog(pageId: "${params.pageId}") {
+						data
+					}
+				}
+			`
+  		// mutation: gql`mutation($pageId: String!, $content: String!) {
+  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
+  		// 			data
+  		// 		}
+  		// 	}
+  		// `
+  	})
+  	return result
+	}
+
+	@Action
+	public async deleteJianshuBlogApi(params: any) {
+  	try {
+  		const result = await rebuildResult(applloClient.mutate, 'deleteJianshuBlog', {
+  			mutation: gql`
+          mutation {
+            deleteJianshuBlog(pageId: "${params.pageId}", jianshu_id: "${params.jianshu_id}") {
+              data
+            }
+          }
+        `
+  		})
+  		return result
+  	} catch (error) {
+  		return [error]
+  	}
+	}
+
+	@Action
+	public async getJianshuList(
+  	params = {
+  		page: 1,
+  		limit: 10
+  	}
+	) {
+  	const result = await rebuildResult(applloClient.query, 'jianshuList', {
+  		query: gql`
+				query {
+					jianshuList{
+						list {
+							notebook_id
+							paid
+							title
+							content_updated_at
+							id
+						}
+					}
+				}
+			`
+  	})
+  	return result
 	}
 }
 

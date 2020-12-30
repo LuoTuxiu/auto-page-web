@@ -40,7 +40,7 @@
       </template>
       <template v-if="item.children">
         <sidebar-item
-          v-for="child in item.children"
+          v-for="child in item.children.filter(obj => obj.hidden !== true)"
           :key="child.path"
           :item="child"
           :is-collapse="isCollapse"

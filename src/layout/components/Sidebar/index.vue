@@ -1,6 +1,7 @@
 <template>
   <el-scrollbar wrap-class="scrollbar-wrapper">
     <el-menu
+      :default-openeds="['/','blog/list']"
       :collapse="isCollapse"
       :background-color="variables.menuBg"
       :text-color="variables.menuText"

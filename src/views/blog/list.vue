@@ -1,15 +1,51 @@
 <template>
   <div class="blog-list">
     <div>
+      <el-form
+        :inline="true"
+        :model="filterForm"
+        class="demo-form-inline"
+      >
+        <el-form-item label="关键字">
+          <el-input
+            v-model="filterForm.keyword"
+            placeholder="请输入关键字"
+            clearable
+          />
+        </el-form-item>
+        <!-- <el-form-item label="活动区域">
+          <el-select
+            v-model="formInline.region"
+            placeholder="活动区域"
+          >
+            <el-option
+              label="区域一"
+              value="shanghai"
+            />
+            <el-option
+              label="区域二"
+              value="beijing"
+            />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item>
+          <el-button
+            type="primary"
+            @click="handleGetLocalBlogList"
+          >
+            查询
+          </el-button>
+        </el-form-item>
+      </el-form>
       <el-button @click="handleClickPublishOwnBlog">
         发布到自己博客
       </el-button>
       <el-button @click="handleClickAddNewBlog">
         新建本地博客
       </el-button>
-      <el-button @click="handleGetLocalBlogList">
+      <!-- <el-button @click="handleGetLocalBlogList">
         刷新
-      </el-button>
+      </el-button> -->
     </div>
     <el-table
       v-loading="loading"
@@ -30,13 +66,21 @@
         width="200"
       /> -->
       <el-table-column
-        prop="grouping"
-        label="分组"
+        prop="category.category_name"
+        label="分类"
       />
       <!-- <el-table-column
         prop="originPath"
         label="原始路径"
       /> -->
+      <el-table-column
+        prop="updateTime"
+        label="更新时间"
+      >
+        <template slot-scope="scope">
+          <span> {{ scope.row.updateTime | formatDate }} </span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="createTime"
         label="创建时间"
@@ -46,17 +90,12 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="updateTime"
-        label="更新时间"
-      >
-        <template slot-scope="scope">
-          <span> {{ scope.row.updateTime | formatDate }} </span>
-        </template>
-      </el-table-column>
-
-      <el-table-column
         prop="juejin_id"
         label="掘金id"
+      />
+      <el-table-column
+        prop="jianshu_id"
+        label="简书id"
       />
       <el-table-column
         prop="operator"
@@ -87,6 +126,22 @@
             删除掘金
           </el-button>
           <el-button
+            v-if="!scope.row.jianshu_id"
+            type="text"
+            size="small"
+            @click="handleClickPublishJianshu(scope.row)"
+          >
+            发布简书
+          </el-button>
+          <el-button
+            v-if="scope.row.jianshu_id"
+            type="text"
+            size="small"
+            @click="handleClickDeleteJianshu(scope.row)"
+          >
+            删除简书
+          </el-button>
+          <el-button
             type="text"
             size="small"
             @click="handleClickDeletepage(scope.row)"
@@ -97,7 +152,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      layout="sizes, prev, pager, next"
+      layout="total, sizes, prev, pager, next"
       :total="total"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -116,6 +171,7 @@ export default class extends Vue {
 	data = []
   total = 0
   loading = false
+  filterForm = {}
 
   mounted() {
   	this.handleGetLocalBlogList()
@@ -125,14 +181,11 @@ export default class extends Vue {
   	this.loading = true
   	const params = {
   		page: 1,
-  		limit: 10,
+  		limit: 100,
+  		keyword: this.filterForm.keyword,
   		...propParams
   	}
-  	console.log('====================================')
-  	console.log(`开始发list请求`)
-  	console.log('====================================')
-  	const [err, result] = await PageModule.GetPageList(params)
-  	console.log(result)
+  	const [err, result] = await PageModule.getPageList(params)
   	if (!err) {
   		this.data = [].concat(result.list)
   		this.total = result.total
@@ -160,32 +213,81 @@ export default class extends Vue {
   		pageId: row.pageId,
   		content: row.content
   	})
-  	console.log(result)
   	this.handleGetLocalBlogList()
   }
 
   async handleClickDeleteJuejin(row) {
-  	const [err, result] = await PageModule.deleteJuejinBlogApi({
+  	const [err] = await PageModule.deleteJuejinBlogApi({
   		pageId: row.pageId,
   		juejin_id: row.juejin_id
   	})
   	if (!err) {
   		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除掘金博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickPublishJianshu(row) {
+  	const [err, result] = await PageModule.publishJianshuBlogApi({
+  		pageId: row.pageId,
+  		content: row.content
+  	})
+  	if (!err) {
+  	  	this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '发布简书博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickDeleteJianshu(row) {
+  	const [err] = await PageModule.deleteJianshuBlogApi({
+  		pageId: row.pageId,
+  		jianshu_id: row.jianshu_id
+  	})
+  	if (!err) {
+  		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除简书博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
   	}
   }
 
   async handleClickDeletepage(row) {
-  	const [err, result] = await PageModule.deletePageApi({
+  	const [err] = await PageModule.deletePageApi({
   		pageId: row.pageId
   	})
-  	console.log('====================================')
-  	console.log(`handleClickDeletepage`)
-  	console.log('====================================')
-  	if (!err) {
-  		console.log('====================================')
-  		console.log(`即将刷新页面`)
-  		console.log('====================================')
+  		if (!err) {
   		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除本地博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
   	}
   }
 

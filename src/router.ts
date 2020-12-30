@@ -43,18 +43,19 @@ export default new Router({
 		{
 			path: '/',
 			component: Layout,
-			redirect: '/dashboard',
+			redirect: '/blog/list',
 			meta: {
 				title: 'Dashboard',
 				icon: 'dashboard'
 			},
 			children: [
 				{
-					path: 'dashboard',
-					component: () => import(/* webpackChunkName: "dashboard" */ '@/views/dashboard/index.vue'),
+					path: 'category/list',
+					name: 'category',
+					component: () => import(/* webpackChunkName: "blog" */ '@/views/category/list.vue'),
 					meta: {
-						title: 'Dashboard',
-						icon: 'dashboard'
+						title: '分类列表',
+						icon: ''
 					}
 				},
 				{
@@ -62,8 +63,17 @@ export default new Router({
 					name: 'blogList',
 					component: () => import(/* webpackChunkName: "blog" */ '@/views/blog/list.vue'),
 					meta: {
-						title: 'blog',
-						icon: 'blog'
+						title: '博客列表',
+						icon: ''
+					}
+				},
+				{
+					path: 'jianshu/list',
+					name: 'jianshu',
+					component: () => import(/* webpackChunkName: "blog" */ '@/views/jianshu/list.vue'),
+					meta: {
+						title: '简书列表',
+						icon: ''
 					}
 				},
 				{
@@ -71,18 +81,20 @@ export default new Router({
 					name: 'blogEdit',
 					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
 					meta: {
-						title: 'edit',
+						title: '编辑博客',
 						icon: 'blog'
-					}
+					},
+					hidden: true
 				},
 				{
 					path: 'blog/add',
 					name: 'blogAdd',
 					component: () => import(/* webpackChunkName: "blogEdit" */ '@/views/blog/edit.vue'),
 					meta: {
-						title: 'edit',
+						title: '新增博客',
 						icon: 'blog'
-					}
+					},
+					hidden: true
 				}
 			]
 		},

@@ -11,10 +11,35 @@
           class="header-input--title"
         />
       </div>
-      <div>
-        <el-button @click="handleSave">
-          保存
-        </el-button>
+      <div class="blog-action">
+        <el-popover
+          placement="bottom"
+          width="400"
+          trigger="click"
+          @show="handleGetAllCategory"
+        >
+          <div>
+            <div class="category-list">
+              <el-radio
+                v-for="item in category"
+                :key="item.category_id"
+                v-model="selectCategory"
+                :label="item.category_id"
+                size="medium"
+              >
+                {{ item.category_name }}
+              </el-radio>
+            </div>
+            <div class="category-list--action">
+              <el-button @click="handleSave">
+                保存
+              </el-button>
+            </div>
+          </div>
+          <el-button slot="reference">
+            保存
+          </el-button>
+        </el-popover>
         <!-- <el-button @click="handleSaveLocal">
         保存到本地文件
       </el-button> -->
@@ -72,12 +97,20 @@ import { PageModule } from '@/store/modules/page'
 export default class extends Vue {
 	markdownData = ''
 	detail = {}
+	category = []
+	selectCategory = ''
+	isInputScroll = false
+	currentMouseElement = null
 
 	destroyed() {
 		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
 	}
 	mounted() {
 		document.getElementById('markdown-input').addEventListener('scroll', this.handleInputScroll)
+		document.getElementById('vue-markdown--content').addEventListener('scroll', this.handlePreViewScroll)
+		window.document.body.onmouseover = (event) => {
+			this.currentMouseElement = event.target
+		}
 		this.handleGetLocalBlogDetail()
 	}
 
@@ -87,15 +120,30 @@ export default class extends Vue {
 			const params = {
 				pageId
 			}
-			const [err, result] = await PageModule.GetPageDetail(params)
+			const [err, result] = await PageModule.getPageDetail(params)
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
+			this.selectCategory = result.category._id
 		}
 	}
 
+	async handleGetAllCategory(propParams = {}) {
+		const [err, result] = await PageModule.getCategorysAll()
+		this.category = [].concat(result.list)
+	}
+
 	handleInputScroll(event) {
-		const markdownContent = document.getElementById('vue-markdown--content')
-		markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		if (event.target.contains(this.currentMouseElement)) {
+			const markdownContent = document.getElementById('vue-markdown--content')
+			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		}
+	}
+
+	handlePreViewScroll(event) {
+		if (event.target.contains(this.currentMouseElement)) {
+			const markdownContent = document.getElementById('markdown-input')
+			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+		}
 	}
 
 	handleCurrentChange(current) {
@@ -113,30 +161,31 @@ export default class extends Vue {
 	async handleSave() {
 		console.log(`handleSaveLocal`)
 		const pageId = this.$route.params.id
-		// this.$prompt('请输入文章标题', '提示', {
-		// 	confirmButtonText: '确定',
-		// 	cancelButtonText: '取消',
-		// 	inputErrorMessage: '文章标题格式不正确',
-		// 	inputValue: this.detail.title,
-		// 	closeOnClickModal: false
-		// }).then(async({ value }) => {
 		const params = {
 			content: this.markdownData,
-			grouping: '前端',
+			category_id: this.selectCategory,
 			title: this.detail.title
 		}
+		let err
 		if (pageId) {
-			await PageModule.updatePageApi({ ...params,
+			[err] = await PageModule.updatePageApi({ ...params,
 				pageId
 			})
 		} else {
-			await PageModule.addPageApi(params)
+			[err] = await PageModule.addPageApi(params)
 		}
-		this.$router.push({
-			name: 'blogList',
-			params: {
-			}
-		})
+		if (!err) {
+			this.$router.push({
+				name: 'blogList',
+				params: {
+				}
+			})
+		} else {
+			this.$message({
+				type: 'warning',
+				message: err.message
+			})
+		}
 		// }).catch(() => {
 		// 	this.$message({
 		// 		type: 'info',
@@ -151,7 +200,7 @@ export default class extends Vue {
 			content: this.markdownData
 		})
 		if (!err) {
-			// this.handleGetLocalBlogList()
+			this.handleGetLocalBlogDetail()
 			this.$message({
 				type: 'success',
 				message: '发布成功'
@@ -206,10 +255,27 @@ export default class extends Vue {
 				margin-right: 10px;
 			}
 			.header-input--title{
-				width: 400px;
+				width: 500px;
+			}
+		}
+			.blog-action{
+			& > button {
+				margin-left: 10px;
 			}
 		}
 	}
+	.category-list{
+		display: flex;
+		margin: 10px 0;
+		flex-wrap: wrap;
+		&> label {
+			margin-bottom: 2px;
+		}
+	}
+		.category-list--action{
+			    display: flex;
+    justify-content: flex-end;
+		}
 	.blog-edit--content {
 		display: flex;
 		padding: 20px 0;
@@ -229,10 +295,12 @@ export default class extends Vue {
 		.vue-markdown--content {
 			border: 1px solid rgb(118, 118, 118);
 			overflow-y: auto;
+			padding: 10px;
 			img{
 				width: 100%;
 			}
 		}
+
 	}
 </style>
 <style lang="scss">
@@ -241,4 +309,22 @@ export default class extends Vue {
 		width: 200px;
 	}
 }
+code {
+	font-size: 12px;
+    padding: 15px 12px;
+    margin: 0;
+    word-break: normal;
+    display: block;
+    overflow-x: auto;
+    color: #333;
+    background: #f8f8f8;
+
+}
+.vue-markdown--content {
+			a {
+			    color: #275b8c;
+					    border-bottom: 1px solid #d1e9ff;
+		}
+}
+
 </style>

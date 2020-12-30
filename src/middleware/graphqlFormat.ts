@@ -17,7 +17,7 @@ const rebuildResult = async(next: Function, path: string, ...args: any[]) => {
 			return [null, data[path]]
 		}
 	} catch (error) {
-		return [null, error]
+		return [error]
 	}
 }
 
