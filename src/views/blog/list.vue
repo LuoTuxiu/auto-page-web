@@ -126,7 +126,7 @@
             删除掘金
           </el-button>
           <el-button
-            v-if="!scope.row.juejin_id"
+            v-if="!scope.row.jianshu_id"
             type="text"
             size="small"
             @click="handleClickPublishJianshu(scope.row)"
@@ -134,7 +134,7 @@
             发布简书
           </el-button>
           <el-button
-            v-if="scope.row.juejin_id"
+            v-if="scope.row.jianshu_id"
             type="text"
             size="small"
             @click="handleClickDeleteJianshu(scope.row)"
@@ -257,7 +257,7 @@ export default class extends Vue {
   async handleClickDeleteJianshu(row) {
   	const [err] = await PageModule.deleteJianshuBlogApi({
   		pageId: row.pageId,
-  		juejin_id: row.juejin_id
+  		jianshu_id: row.jianshu_id
   	})
   	if (!err) {
   		this.handleGetLocalBlogList()
