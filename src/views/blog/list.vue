@@ -154,6 +154,7 @@
     <el-pagination
       layout="total, sizes, prev, pager, next"
       :total="total"
+      :page-size="limit"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -172,6 +173,7 @@ export default class extends Vue {
   total = 0
   loading = false
   filterForm = {}
+  limit = 100
 
   mounted() {
   	this.handleGetLocalBlogList()
@@ -181,7 +183,7 @@ export default class extends Vue {
   	this.loading = true
   	const params = {
   		page: 1,
-  		limit: 100,
+  		limit: this.limit,
   		keyword: this.filterForm.keyword,
   		...propParams
   	}
@@ -203,6 +205,7 @@ export default class extends Vue {
   }
 
   handleSizeChange(size) {
+  	this.limit = size
   	this.handleGetLocalBlogList({
   		limit: size
   	})
