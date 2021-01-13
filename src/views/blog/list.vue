@@ -126,12 +126,11 @@
             删除掘金
           </el-button>
           <el-button
-            v-if="!scope.row.jianshu_id"
             type="text"
             size="small"
             @click="handleClickPublishJianshu(scope.row)"
           >
-            发布简书
+            {{ scope.row.jianshu_id ? '更新简书': '发布简书' }}
           </el-button>
           <el-button
             v-if="scope.row.jianshu_id"

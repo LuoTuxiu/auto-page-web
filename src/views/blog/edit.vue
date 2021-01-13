@@ -325,6 +325,9 @@ code {
 			    color: #275b8c;
 					    border-bottom: 1px solid #d1e9ff;
 		}
+		img {
+			max-width: 100%;
+		}
 }
 
 </style>
