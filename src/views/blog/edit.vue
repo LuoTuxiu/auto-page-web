@@ -112,6 +112,9 @@ export default class extends Vue {
 			this.currentMouseElement = event.target
 		}
 		this.handleGetLocalBlogDetail()
+		setInterval(() => {
+			this.handleSave()
+		}, 60 * 1000) // 10s保存一次
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
@@ -175,11 +178,15 @@ export default class extends Vue {
 			[err] = await PageModule.addPageApi(params)
 		}
 		if (!err) {
-			this.$router.push({
-				name: 'blogList',
-				params: {
-				}
+			this.$message({
+				type: 'success',
+				message: '保存成功'
 			})
+			// this.$router.push({
+			// 	name: 'blogList',
+			// 	params: {
+			// 	}
+			// })
 		} else {
 			this.$message({
 				type: 'warning',
