@@ -126,11 +126,20 @@
             删除掘金
           </el-button>
           <el-button
+            v-if="scope.row.jianshu_id"
+            type="text"
+            size="small"
+            @click="handleClickUpdateJianshu(scope.row)"
+          >
+            更新简书
+          </el-button>
+          <el-button
+            v-else
             type="text"
             size="small"
             @click="handleClickPublishJianshu(scope.row)"
           >
-            {{ scope.row.jianshu_id ? '更新简书': '发布简书' }}
+            发布简书
           </el-button>
           <el-button
             v-if="scope.row.jianshu_id"
@@ -247,6 +256,27 @@ export default class extends Vue {
   		this.$message({
   			type: 'success',
   			message: '发布简书博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickUpdateJianshu(row) {
+  	const [err, result] = await PageModule.updateJianshuBlogApi({
+  		pageId: row.pageId,
+  		content: row.content,
+  		jianshu_id: row.jianshu_id,
+  		title: row.title
+  	})
+  	if (!err) {
+  	  	this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '更新简书博客成功'
   		})
   	} else {
   		this.$message({
