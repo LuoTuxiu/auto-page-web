@@ -94,6 +94,7 @@ import { PageModule } from '@/store/modules/page'
 		VueMarkdown
 	}
 })
+
 export default class extends Vue {
 	markdownData = ''
 	detail = {}
@@ -101,8 +102,10 @@ export default class extends Vue {
 	selectCategory = ''
 	isInputScroll = false
 	currentMouseElement = null
+	intervalRef = null
 
 	destroyed() {
+		clearInterval(this.intervalRef)
 		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
 	}
 	mounted() {
@@ -112,6 +115,11 @@ export default class extends Vue {
 			this.currentMouseElement = event.target
 		}
 		this.handleGetLocalBlogDetail()
+		this.intervalRef = setInterval(() => {
+			if (this.$route.params.id) {
+				this.handleSave()
+			}
+		}, 60 * 1000) // 10s保存一次
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
@@ -160,6 +168,9 @@ export default class extends Vue {
 
 	async handleSave() {
 		console.log(`handleSaveLocal`)
+		if (document.hidden) { // 不在active的tab，则不需要自动保存
+			return
+		}
 		const pageId = this.$route.params.id
 		const params = {
 			content: this.markdownData,
@@ -175,11 +186,15 @@ export default class extends Vue {
 			[err] = await PageModule.addPageApi(params)
 		}
 		if (!err) {
-			this.$router.push({
-				name: 'blogList',
-				params: {
-				}
+			this.$message({
+				type: 'success',
+				message: '保存成功'
 			})
+			// this.$router.push({
+			// 	name: 'blogList',
+			// 	params: {
+			// 	}
+			// })
 		} else {
 			this.$message({
 				type: 'warning',
@@ -324,6 +339,9 @@ code {
 			a {
 			    color: #275b8c;
 					    border-bottom: 1px solid #d1e9ff;
+		}
+		img {
+			max-width: 100%;
 		}
 }
 

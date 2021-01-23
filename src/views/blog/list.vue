@@ -126,7 +126,15 @@
             删除掘金
           </el-button>
           <el-button
-            v-if="!scope.row.jianshu_id"
+            v-if="scope.row.jianshu_id"
+            type="text"
+            size="small"
+            @click="handleClickUpdateJianshu(scope.row)"
+          >
+            更新简书
+          </el-button>
+          <el-button
+            v-else
             type="text"
             size="small"
             @click="handleClickPublishJianshu(scope.row)"
@@ -154,6 +162,7 @@
     <el-pagination
       layout="total, sizes, prev, pager, next"
       :total="total"
+      :page-size="limit"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -172,6 +181,7 @@ export default class extends Vue {
   total = 0
   loading = false
   filterForm = {}
+  limit = 100
 
   mounted() {
   	this.handleGetLocalBlogList()
@@ -181,7 +191,7 @@ export default class extends Vue {
   	this.loading = true
   	const params = {
   		page: 1,
-  		limit: 100,
+  		limit: this.limit,
   		keyword: this.filterForm.keyword,
   		...propParams
   	}
@@ -203,6 +213,7 @@ export default class extends Vue {
   }
 
   handleSizeChange(size) {
+  	this.limit = size
   	this.handleGetLocalBlogList({
   		limit: size
   	})
@@ -245,6 +256,27 @@ export default class extends Vue {
   		this.$message({
   			type: 'success',
   			message: '发布简书博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
+  async handleClickUpdateJianshu(row) {
+  	const [err, result] = await PageModule.updateJianshuBlogApi({
+  		pageId: row.pageId,
+  		content: row.content,
+  		jianshu_id: row.jianshu_id,
+  		title: row.title
+  	})
+  	if (!err) {
+  	  	this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '更新简书博客成功'
   		})
   	} else {
   		this.$message({
