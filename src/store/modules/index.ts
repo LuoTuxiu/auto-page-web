@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { IAppState } from './modules/app'
-import { IUserState } from './modules/user'
-import { IPageState } from './modules/page'
+import { IAppState } from './app'
+import { IUserState } from './user'
+import { IPageState } from './page'
 
 Vue.use(Vuex)
 
