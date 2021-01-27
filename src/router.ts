@@ -84,6 +84,7 @@ export default new Router({
 						title: '编辑博客',
 						icon: 'blog'
 					},
+					// @ts-ignore
 					hidden: true
 				},
 				{
@@ -94,6 +95,7 @@ export default new Router({
 						title: '新增博客',
 						icon: 'blog'
 					},
+					// @ts-ignore
 					hidden: true
 				}
 			]

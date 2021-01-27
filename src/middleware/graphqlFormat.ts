@@ -14,6 +14,7 @@ const rebuildResult = async(next: Function, path: string, ...args: any[]) => {
 				data: error.data
 			}]
 		} else {
+			// @ts-ignore
 			return [null, data[path]]
 		}
 	} catch (error) {

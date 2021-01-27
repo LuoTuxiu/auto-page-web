@@ -20,6 +20,7 @@ import applloClient from './apollo'
 Vue.use(VueApollo)
 
 const apolloProvider = new VueApollo({
+	// @ts-ignore
 	defaultClient: applloClient
 })
 
