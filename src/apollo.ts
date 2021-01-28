@@ -14,7 +14,7 @@ const defaultOptions: DefaultOptions = {
 const applloClient = new ApolloClient({
 	cache: new InMemoryCache(),
 	defaultOptions: defaultOptions,
-	uri: 'http://localhost:3001/graphql'
+	uri: `${process.env.VUE_APP_BASE_API}graphql`
 })
 
 export default applloClient
