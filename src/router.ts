@@ -97,6 +97,15 @@ export default new Router({
 					},
 					// @ts-ignore
 					hidden: true
+				},
+				{
+					path: 'setting/blog-config',
+					name: 'blogConfig',
+					component: () => import(/* webpackChunkName: "blog" */ '@/views/setting/blogConfig.vue'),
+					meta: {
+						title: '博客设置',
+						icon: ''
+					}
 				}
 			]
 		},
