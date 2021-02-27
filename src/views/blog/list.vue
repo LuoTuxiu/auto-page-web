@@ -47,118 +47,133 @@
         刷新
       </el-button> -->
     </div>
-    <el-table
-      v-loading="loading"
-      :data="data"
-    >
-      <!-- <el-table-column prop="pageId" label="pageId" /> -->
-      <el-table-column
-        prop="title"
-        label="标题"
-      />
-      <!-- <el-table-column
+    <div class="page-content">
+      <el-tabs
+        v-model="activeTabs"
+        tab-position="left"
+        style="height: 200px;"
+        @tab-click="handleTabClick"
+      >
+        <el-tab-pane
+          v-for="item in category"
+          :key="item.category_id"
+          :name="item.category_id"
+          :label="item.category_name"
+        />
+      </el-tabs>
+      <el-table
+        v-loading="loading"
+        :data="data"
+      >
+        <!-- <el-table-column prop="pageId" label="pageId" /> -->
+        <el-table-column
+          prop="title"
+          label="标题"
+        />
+        <!-- <el-table-column
         prop="keyword"
         label="关键字"
       /> -->
-      <!-- <el-table-column
+        <!-- <el-table-column
         prop="content"
         label="内容"
         width="200"
       /> -->
-      <el-table-column
-        prop="category.category_name"
-        label="分类"
-      />
-      <!-- <el-table-column
+        <el-table-column
+          prop="category.category_name"
+          label="分类"
+        />
+        <!-- <el-table-column
         prop="originPath"
         label="原始路径"
       /> -->
-      <el-table-column
-        prop="updateTime"
-        label="更新时间"
-      >
-        <template slot-scope="scope">
-          <span> {{ scope.row.updateTime | formatDate }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        label="创建时间"
-      >
-        <template slot-scope="scope">
-          <span> {{ scope.row.createTime | formatDate }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="juejin_id"
-        label="掘金id"
-      />
-      <el-table-column
-        prop="jianshu_id"
-        label="简书id"
-      />
-      <el-table-column
-        prop="operator"
-        label="操作"
-      >
-        <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click="handleClickEdit(scope.row)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            v-if="!scope.row.juejin_id"
-            type="text"
-            size="small"
-            @click="handleClickPublishJuejin(scope.row)"
-          >
-            发布掘金
-          </el-button>
-          <el-button
-            v-if="scope.row.juejin_id"
-            type="text"
-            size="small"
-            @click="handleClickDeleteJuejin(scope.row)"
-          >
-            删除掘金
-          </el-button>
-          <el-button
-            v-if="scope.row.jianshu_id"
-            type="text"
-            size="small"
-            @click="handleClickUpdateJianshu(scope.row)"
-          >
-            更新简书
-          </el-button>
-          <el-button
-            v-else
-            type="text"
-            size="small"
-            @click="handleClickPublishJianshu(scope.row)"
-          >
-            发布简书
-          </el-button>
-          <el-button
-            v-if="scope.row.jianshu_id"
-            type="text"
-            size="small"
-            @click="handleClickDeleteJianshu(scope.row)"
-          >
-            删除简书
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="handleClickDeletepage(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column
+          prop="updateTime"
+          label="更新时间"
+        >
+          <template slot-scope="scope">
+            <span> {{ scope.row.updateTime | formatDate }} </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+        >
+          <template slot-scope="scope">
+            <span> {{ scope.row.createTime | formatDate }} </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="juejin_id"
+          label="掘金id"
+        />
+        <el-table-column
+          prop="jianshu_id"
+          label="简书id"
+        />
+        <el-table-column
+          prop="operator"
+          label="操作"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              size="small"
+              @click="handleClickEdit(scope.row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              v-if="!scope.row.juejin_id"
+              type="text"
+              size="small"
+              @click="handleClickPublishJuejin(scope.row)"
+            >
+              发布掘金
+            </el-button>
+            <el-button
+              v-if="scope.row.juejin_id"
+              type="text"
+              size="small"
+              @click="handleClickDeleteJuejin(scope.row)"
+            >
+              删除掘金
+            </el-button>
+            <el-button
+              v-if="scope.row.jianshu_id"
+              type="text"
+              size="small"
+              @click="handleClickUpdateJianshu(scope.row)"
+            >
+              更新简书
+            </el-button>
+            <el-button
+              v-else
+              type="text"
+              size="small"
+              @click="handleClickPublishJianshu(scope.row)"
+            >
+              发布简书
+            </el-button>
+            <el-button
+              v-if="scope.row.jianshu_id"
+              type="text"
+              size="small"
+              @click="handleClickDeleteJianshu(scope.row)"
+            >
+              删除简书
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              @click="handleClickDeletepage(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <el-pagination
       layout="total, sizes, prev, pager, next"
       :total="total"
@@ -171,20 +186,26 @@
 
 <script>
 import { Vue, Component } from 'vue-property-decorator'
-import { Table } from 'element-ui'
 import { PageModule } from '@/store/modules/page'
 @Component({
 	name: 'Blog'
 })
 export default class extends Vue {
-	data = []
+  data = []
+  category = []
+  activeTabs = 0
   total = 0
   loading = false
   filterForm = {}
   limit = 100
 
   mounted() {
+  	this.handleGetAllCategory()
   	this.handleGetLocalBlogList()
+  }
+
+  async handleTabClick(tab) {
+  	this.handleGetLocalBlogList({ category_id: this.activeTabs })
   }
 
   async handleGetLocalBlogList(propParams = {}) {
@@ -263,6 +284,10 @@ export default class extends Vue {
   			message: err.message
   		})
   	}
+  }
+  	async handleGetAllCategory(propParams = {}) {
+  	const [err, result] = await PageModule.getCategorysAll()
+  	this.category = [].concat(result.list)
   }
 
   async handleClickUpdateJianshu(row) {
@@ -351,4 +376,8 @@ export default class extends Vue {
 	.blog-list {
 		padding: 10px;
 	}
+  .page-content{
+    padding-top: 10px;
+    display: flex;
+  }
 </style>
