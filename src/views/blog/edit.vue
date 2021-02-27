@@ -84,7 +84,6 @@
 
 <script>
 import { Vue, Component } from 'vue-property-decorator'
-import { Table } from 'element-ui'
 import VueMarkdown from 'vue-markdown'
 import { PageModule } from '@/store/modules/page'
 
@@ -98,6 +97,7 @@ import { PageModule } from '@/store/modules/page'
 export default class extends Vue {
 	markdownData = ''
 	detail = {}
+	result = {}
 	category = []
 	selectCategory = ''
 	isInputScroll = false
@@ -129,9 +129,10 @@ export default class extends Vue {
 				pageId
 			}
 			const [err, result] = await PageModule.getPageDetail(params)
+			this.result = Object.assign({}, result)
 			this.detail = Object.assign({}, result)
 			this.markdownData = decodeURIComponent(result.content)
-			this.selectCategory = result.category._id
+			this.selectCategory = result.category && result.category._id
 		}
 	}
 
@@ -168,7 +169,7 @@ export default class extends Vue {
 
 	async handleSave() {
 		console.log(`handleSaveLocal`)
-		if (document.hidden) { // 不在active的tab，则不需要自动保存
+		if (document.hidden || (this.markdownData === this.detail.content && this.detail.title === this.result.title && this.selectCategory === this.result.category_id)) { // 不在active的tab，则不需要自动保存
 			return
 		}
 		const pageId = this.$route.params.id

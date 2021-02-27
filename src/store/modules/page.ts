@@ -25,13 +25,14 @@ class Page extends VuexModule implements IPageState {
   	params = {
   		page: 1,
   		limit: 10,
-  		keyword: ''
+  		keyword: '',
+  		category_id: '0'
   	}
   ) {
   	const result = await rebuildResult(applloClient.query, 'pageList', {
   		query: gql`
 				query {
-					pageList(page: ${params.page}, limit: ${params.limit}, keyword: "${params.keyword || ''}"){
+					pageList(page: ${params.page}, limit: ${params.limit}, keyword: "${params.keyword || ''}", category_id: "${params.category_id || '0'}"){
 						total
 						list {
 							pageId
