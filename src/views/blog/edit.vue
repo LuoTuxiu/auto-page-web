@@ -256,7 +256,15 @@ export default class extends Vue {
 	}
 
 	async handleClickPublishOwnBlog() {
-		await PageModule.UploadToOwnBlogApi()
+		if (this.detail.own_blog_id) {
+			await PageModule.updateToOwnBlogApi({ pageId: this.$route.params.id })
+		} else {
+			await PageModule.addOwnBlogApi({ pageId: this.$route.params.id })
+		}
+		this.$message({
+			type: 'success',
+			message: '发布自建站博客成功'
+		})
 	}
 }
 </script>

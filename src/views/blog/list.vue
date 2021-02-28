@@ -37,9 +37,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <el-button @click="handleClickPublishOwnBlog">
-        发布到自己博客
-      </el-button>
       <el-button @click="handleClickAddNewBlog">
         新建本地博客
       </el-button>
@@ -112,6 +109,10 @@
           label="简书id"
         />
         <el-table-column
+          prop="own_blog_id"
+          label="自建站博客id"
+        />
+        <el-table-column
           prop="operator"
           label="操作"
         >
@@ -138,6 +139,22 @@
               @click="handleClickDeleteJuejin(scope.row)"
             >
               删除掘金
+            </el-button>
+            <el-button
+              v-if="!scope.row.own_blog_id"
+              type="text"
+              size="small"
+              @click="handleClickPublishOwnBlog(scope.row)"
+            >
+              发布到自己博客
+            </el-button>
+            <el-button
+              v-if="scope.row.own_blog_id"
+              type="text"
+              size="small"
+              @click="handleClickDeleteLocalBlog(scope.row)"
+            >
+              删除自建站博客
             </el-button>
             <el-button
               v-if="scope.row.jianshu_id"
@@ -267,6 +284,24 @@ export default class extends Vue {
   	}
   }
 
+  async handleClickDeleteLocalBlog(row) {
+  	const [err] = await PageModule.deleteOwnBlogApi({
+  		pageId: row.pageId
+  	})
+  	if (!err) {
+  		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '删除自建站博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
+  }
+
   async handleClickPublishJianshu(row) {
   	const [err, result] = await PageModule.publishJianshuBlogApi({
   		pageId: row.pageId,
@@ -365,9 +400,22 @@ export default class extends Vue {
   	})
   }
 
-  async handleClickPublishOwnBlog() {
-  	const result = await PageModule.UploadToOwnBlogApi()
-  	console.log(result)
+  async handleClickPublishOwnBlog(row) {
+  	const [err] = await PageModule.addOwnBlogApi({
+  		pageId: row.pageId
+  	})
+  		if (!err) {
+  		this.handleGetLocalBlogList()
+  		this.$message({
+  			type: 'success',
+  			message: '新建本地博客成功'
+  		})
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
   }
 }
 </script>

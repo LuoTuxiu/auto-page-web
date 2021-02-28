@@ -2,7 +2,6 @@
   <el-form
     ref="ruleForm"
     :model="ruleForm"
-    :rules="rules"
     label-width="100px"
     class="ruleForm"
   >
@@ -17,6 +16,12 @@
       prop="cookie_jianshu"
     >
       <el-input v-model="ruleForm.cookie_jianshu" />
+    </el-form-item>
+    <el-form-item
+      label="自建站服务器文件地址"
+      prop="own_blog_service_path"
+    >
+      <el-input v-model="ruleForm.own_blog_service_path" />
     </el-form-item>
     <el-form-item>
       <el-button
@@ -63,10 +68,11 @@ export default class extends Vue {
 	}
 
 	async handleSave() {
-		const { cookie_juejin, cookie_jianshu } = this.ruleForm
+		const { cookie_juejin, cookie_jianshu, own_blog_service_path } = this.ruleForm
 		const params = {
 			cookie_juejin,
-			cookie_jianshu
+			cookie_jianshu,
+			own_blog_service_path
 		}
 		const [err] = await PageSettingModule.updatePageSettingApi(params)
 		if (!err) {
