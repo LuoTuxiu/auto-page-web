@@ -58,138 +58,145 @@
           :label="item.category_name"
         />
       </el-tabs>
-      <el-table
+      <div
         v-loading="loading"
-        :data="data"
+        class="rightTabContent"
       >
-        <!-- <el-table-column prop="pageId" label="pageId" /> -->
-        <el-table-column
-          prop="title"
-          label="标题"
-        />
-        <!-- <el-table-column
+        <el-table
+          :data="data"
+          size="mini"
+        >
+          <!-- <el-table-column prop="pageId" label="pageId" /> -->
+          <el-table-column
+            prop="title"
+            label="标题"
+            width="300"
+          />
+          <!-- <el-table-column
         prop="keyword"
         label="关键字"
       /> -->
-        <!-- <el-table-column
+          <!-- <el-table-column
         prop="content"
         label="内容"
         width="200"
       /> -->
-        <el-table-column
-          prop="category.category_name"
-          label="分类"
-        />
-        <!-- <el-table-column
+          <el-table-column
+            prop="category.category_name"
+            label="分类"
+          />
+          <!-- <el-table-column
         prop="originPath"
         label="原始路径"
       /> -->
-        <el-table-column
-          prop="updateTime"
-          label="更新时间"
-        >
-          <template slot-scope="scope">
-            <span> {{ scope.row.updateTime | formatDate }} </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="createTime"
-          label="创建时间"
-        >
-          <template slot-scope="scope">
-            <span> {{ scope.row.createTime | formatDate }} </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="juejin_id"
-          label="掘金id"
-        />
-        <el-table-column
-          prop="jianshu_id"
-          label="简书id"
-        />
-        <el-table-column
-          prop="own_blog_id"
-          label="自建站博客id"
-        />
-        <el-table-column
-          prop="operator"
-          label="操作"
-        >
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="small"
-              @click="handleClickEdit(scope.row)"
-            >
-              编辑
-            </el-button>
-            <el-button
-              v-if="!scope.row.juejin_id"
-              type="text"
-              size="small"
-              @click="handleClickPublishJuejin(scope.row)"
-            >
-              发布掘金
-            </el-button>
-            <el-button
-              v-if="scope.row.juejin_id"
-              type="text"
-              size="small"
-              @click="handleClickDeleteJuejin(scope.row)"
-            >
-              删除掘金
-            </el-button>
-            <el-button
-              v-if="!scope.row.own_blog_id"
-              type="text"
-              size="small"
-              @click="handleClickPublishOwnBlog(scope.row)"
-            >
-              发布到自己博客
-            </el-button>
-            <el-button
-              v-if="scope.row.own_blog_id"
-              type="text"
-              size="small"
-              @click="handleClickDeleteLocalBlog(scope.row)"
-            >
-              删除自建站博客
-            </el-button>
-            <el-button
-              v-if="scope.row.jianshu_id"
-              type="text"
-              size="small"
-              @click="handleClickUpdateJianshu(scope.row)"
-            >
-              更新简书
-            </el-button>
-            <el-button
-              v-else
-              type="text"
-              size="small"
-              @click="handleClickPublishJianshu(scope.row)"
-            >
-              发布简书
-            </el-button>
-            <el-button
-              v-if="scope.row.jianshu_id"
-              type="text"
-              size="small"
-              @click="handleClickDeleteJianshu(scope.row)"
-            >
-              删除简书
-            </el-button>
-            <el-button
-              type="text"
-              size="small"
-              @click="handleClickDeletepage(scope.row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column
+            prop="updateTime"
+            label="更新时间"
+          >
+            <template slot-scope="scope">
+              <span> {{ scope.row.updateTime | formatDate }} </span>
+            </template>
+          </el-table-column>
+          <!-- <el-table-column
+            prop="createTime"
+            label="创建时间"
+          >
+            <template slot-scope="scope">
+              <span> {{ scope.row.createTime | formatDate }} </span>
+            </template>
+          </el-table-column> -->
+          <el-table-column
+            prop="juejin_id"
+            label="掘金id"
+          />
+          <el-table-column
+            prop="jianshu_id"
+            label="简书id"
+          />
+          <el-table-column
+            prop="own_blog_id"
+            label="自建站博客id"
+          />
+          <el-table-column
+            prop="operator"
+            label="操作"
+            width="400"
+          >
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                size="small"
+                @click="handleClickEdit(scope.row)"
+              >
+                编辑
+              </el-button>
+              <el-button
+                v-if="!scope.row.juejin_id"
+                type="text"
+                size="small"
+                @click="handleClickPublishJuejin(scope.row)"
+              >
+                发布掘金
+              </el-button>
+              <el-button
+                v-if="scope.row.juejin_id"
+                type="text"
+                size="small"
+                @click="handleClickDeleteJuejin(scope.row)"
+              >
+                删除掘金
+              </el-button>
+              <el-button
+                v-if="!scope.row.own_blog_id"
+                type="text"
+                size="small"
+                @click="handleClickPublishOwnBlog(scope.row)"
+              >
+                发布到自己博客
+              </el-button>
+              <el-button
+                v-if="scope.row.own_blog_id"
+                type="text"
+                size="small"
+                @click="handleClickDeleteLocalBlog(scope.row)"
+              >
+                删除自建站博客
+              </el-button>
+              <el-button
+                v-if="scope.row.jianshu_id"
+                type="text"
+                size="small"
+                @click="handleClickUpdateJianshu(scope.row)"
+              >
+                更新简书
+              </el-button>
+              <el-button
+                v-else
+                type="text"
+                size="small"
+                @click="handleClickPublishJianshu(scope.row)"
+              >
+                发布简书
+              </el-button>
+              <el-button
+                v-if="scope.row.jianshu_id"
+                type="text"
+                size="small"
+                @click="handleClickDeleteJianshu(scope.row)"
+              >
+                删除简书
+              </el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="handleClickDeletepage(scope.row)"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
     <el-pagination
       layout="total, sizes, prev, pager, next"
@@ -285,9 +292,11 @@ export default class extends Vue {
   }
 
   async handleClickDeleteLocalBlog(row) {
+          	this.loading = true
   	const [err] = await PageModule.deleteOwnBlogApi({
   		pageId: row.pageId
   	})
+          	this.loading = false
   	if (!err) {
   		this.handleGetLocalBlogList()
   		this.$message({
@@ -401,9 +410,11 @@ export default class extends Vue {
   }
 
   async handleClickPublishOwnBlog(row) {
+      	this.loading = true
   	const [err] = await PageModule.addOwnBlogApi({
   		pageId: row.pageId
   	})
+      	this.loading = false
   		if (!err) {
   		this.handleGetLocalBlogList()
   		this.$message({
@@ -421,11 +432,8 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-	.blog-list {
-		padding: 10px;
-	}
-  .page-content{
-    padding-top: 10px;
-    display: flex;
-  }
+.rightTabContent{
+      overflow-y: auto;
+    flex: 1;
+}
 </style>

@@ -24,26 +24,26 @@ import { AppMain, Navbar, Sidebar } from './components'
 import ResizeMixin from './mixin/resize'
 
 @Component({
-  name: 'Layout',
-  components: {
-    AppMain,
-    Navbar,
-    Sidebar
-  }
+	name: 'Layout',
+	components: {
+		AppMain,
+		Navbar,
+		Sidebar
+	}
 })
 export default class extends mixins(ResizeMixin) {
-  get classObj() {
-    return {
-      hideSidebar: !this.sidebar.opened,
-      openSidebar: this.sidebar.opened,
-      withoutAnimation: this.sidebar.withoutAnimation,
-      mobile: this.device === DeviceType.Mobile
-    }
-  }
+	get classObj() {
+		return {
+			hideSidebar: !this.sidebar.opened,
+			openSidebar: this.sidebar.opened,
+			withoutAnimation: this.sidebar.withoutAnimation,
+			mobile: this.device === DeviceType.Mobile
+		}
+	}
 
-  private handleClickOutside() {
-    AppModule.CloseSideBar(false)
-  }
+	private handleClickOutside() {
+		AppModule.CloseSideBar(false)
+	}
 }
 </script>
 
@@ -66,10 +66,12 @@ export default class extends mixins(ResizeMixin) {
 }
 
 .main-container {
-  min-height: 100%;
+  height: 100%;
   transition: margin-left .28s;
   margin-left: $sideBarWidth;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-container {
