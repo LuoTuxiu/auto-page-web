@@ -265,11 +265,22 @@ export default class extends Vue {
   }
 
   async handleClickPublishJuejin(row) {
-  	const result = await PageModule.publishJuejinBlogApi({
+  	const [err] = await PageModule.publishJuejinBlogApi({
   		pageId: row.pageId,
   		content: row.content
   	})
-  	this.handleGetLocalBlogList()
+  	if (!err) {
+  		this.$message({
+  			type: 'success',
+  			message: '发布掘金成功'
+  		})
+  		this.handleGetLocalBlogList()
+  	} else {
+  		this.$message({
+  			type: 'warning',
+  			message: err.message
+  		})
+  	}
   }
 
   async handleClickDeleteJuejin(row) {

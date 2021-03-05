@@ -197,12 +197,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}
@@ -368,12 +362,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}
@@ -396,12 +384,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}
