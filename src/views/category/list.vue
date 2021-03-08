@@ -17,6 +17,10 @@
         prop="category_name"
         label="分类名称"
       />
+      <el-table-column
+        prop="category_name_en"
+        label="分类英文名称"
+      />
       <!-- <el-table-column
         prop="keyword"
         label="关键字"
@@ -58,13 +62,6 @@
           <el-button
             type="text"
             size="small"
-            @click="handleAddNewJianshu(scope.row)"
-          >
-            新建简书博客
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
             @click="handleClickEdit(scope.row)"
           >
             编辑
@@ -85,42 +82,62 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
+    <el-dialog
+      title="编辑分类信息"
+      :visible.sync="dialogFormVisible"
+    >
+      <el-form :model="form">
+        <el-form-item
+          label="分类名称"
+        >
+          <el-input
+            v-model="form.category_name"
+            autocomplete="off"
+          />
+        </el-form-item>
+        <el-form-item
+          label="分类英文名称"
+        >
+          <el-input
+            v-model="form.category_name_en"
+            autocomplete="off"
+          />
+        </el-form-item>
+      </el-form>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button @click="dialogFormVisible = false">
+          取 消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleComfirmSave"
+        >
+          确 定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { Vue, Component } from 'vue-property-decorator'
-import { Table } from 'element-ui'
 import { PageModule } from '@/store/modules/page'
-import { log } from 'util'
 @Component({
-	name: 'Blog'
+	name: 'Category'
 })
 export default class extends Vue {
 	data = []
-  total = 0
-  loading = false
+	total = 0
+	loading = false
+  form = {}
+  dialogFormVisible = false
+  currentRow = {}
 
   mounted() {
   	this.handleGetCategoryList()
-  }
-
-  async handleAddNewJianshu(row) {
-  	const [err] = await PageModule.deleteCategorysApi({
-  		category_id: row.category_id
-  	})
-  		if (!err) {
-  		this.handleGetCategoryList()
-  		this.$message({
-  			type: 'success',
-  			message: '删除本地博客成功'
-  		})
-  	} else {
-  		this.$message({
-  			type: 'warning',
-  			message: err.message
-  		})
-  	}
   }
 
   async handleGetCategoryList(propParams = {}) {
@@ -157,11 +174,11 @@ export default class extends Vue {
   	const [err] = await PageModule.deleteCategorysApi({
   		category_id: row.category_id
   	})
-  		if (!err) {
+  	if (!err) {
   		this.handleGetCategoryList()
   		this.$message({
   			type: 'success',
-  			message: '删除本地博客成功'
+  			message: '删除分类成功'
   		})
   	} else {
   		this.$message({
@@ -171,42 +188,81 @@ export default class extends Vue {
   	}
   }
 
+  async handleComfirmSave() {
+  	this.dialogFormVisible = false
+  	if (this.form.category_id) {
+  		await this.handleEditCategoryRequest()
+  		this.handleGetCategoryList()
+  	} else {
+  		await this.handleAddCategoryRequest()
+  		this.handleGetCategoryList()
+  	}
+  }
+
   handleClickAddNewBlog() {
-  	const that = this
-  	this.$prompt('请输入分类', '提示', {
-  		confirmButtonText: '确定',
-  		cancelButtonText: '取消',
-  		closeOnClickModal: false
-  	}).then(async({ value }) => {
-  		const [err] = await PageModule.addCategory({
-  			category_name: value
-  		})
-  		if (!err) {
-  			that.handleGetCategoryList()
-  		}
+  	this.dialogFormVisible = true
+  	this.currentRow = Object.assign({})
+  	this.form = Object.assign({})
+  	// const that = this
+  	// this.$prompt('请输入分类', '提示', {
+  	// 	confirmButtonText: '确定',
+  	// 	cancelButtonText: '取消',
+  	// 	closeOnClickModal: false
+  	// }).then(async({ value }) => {
+  	// 	const [err] = await PageModule.addCategory({
+  	// 		category_name: value
+  	// 	})
+  	// 	if (!err) {
+  	// 		that.handleGetCategoryList()
+  	// 	}
+  	// })
+  }
+
+  async handleAddCategoryRequest() {
+  	const { category_name, category_name_en } = this.form
+  	const [err] = await PageModule.addCategory({
+  		category_name, category_name_en
   	})
   }
 
   handleClickEdit(row) {
-  		const that = this
-  	this.$prompt('请输入分类进行编辑', '提示', {
-  		confirmButtonText: '确定',
-  		cancelButtonText: '取消',
-  		inputValue: row.category_name,
-  		closeOnClickModal: false
-  	}).then(async({ value }) => {
-  		const [err] = await PageModule.updateCategoryApi({
-  			category_name: value,
-  			category_id: row.category_id
-  		})
-  		if (!err) {
-  			that.handleGetCategoryList()
-  		}
-  	}).catch((e) => {
-  		this.$message({
-  			type: 'info',
-  			message: '取消输入'
-  		})
+  	this.dialogFormVisible = true
+  	this.currentRow = Object.assign(row)
+  	this.form = Object.assign({
+  		category_name: row.category_name,
+  		category_name_en: row.category_name_en,
+  		category_id: row.category_id
+  	})
+  	// const that = this
+  	// this.$prompt('请输入分类进行编辑', '提示', {
+  	// 	confirmButtonText: '确定',
+  	// 	cancelButtonText: '取消',
+  	// 	inputValue: row.category_name,
+  	// 	closeOnClickModal: false
+  	// })
+  	// 	.then(async({ value }) => {
+  	// 		const [err] = await PageModule.updateCategoryApi({
+  	// 			category_name: value,
+  	// 			category_id: row.category_id
+  	// 		})
+  	// 		if (!err) {
+  	// 			that.handleGetCategoryList()
+  	// 		}
+  	// 	})
+  	// 	.catch((e) => {
+  	// 		this.$message({
+  	// 			type: 'info',
+  	// 			message: '取消输入'
+  	// 		})
+  	// 	})
+  }
+
+  async handleEditCategoryRequest() {
+  	const { category_name, category_name_en, category_id } = this.form
+  	const [err] = await PageModule.updateCategoryApi({
+  		category_name,
+  		category_name_en,
+  		category_id
   	})
   }
 }

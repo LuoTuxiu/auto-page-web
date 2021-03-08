@@ -12,12 +12,13 @@ declare namespace Page {
 	}
 
 	interface AddPageType {
-		category_id: string; // 分类
+		'category_id': string; // 分类
 		content: string;
 		title: string,
   }
 
   interface AddCategoryType {
 		'category_name': string;
+    'category_name_en': string;
 	}
 }

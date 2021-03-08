@@ -53,6 +53,8 @@ class Page extends VuexModule implements IPageState {
 							jianshu_id
 							juejin_updateTime
 							jianshu_updateTime
+							own_blog_id
+							own_blog_updateTime
 						}
 					}
 				}
@@ -72,6 +74,7 @@ class Page extends VuexModule implements IPageState {
 						content
 						title
 						juejin_id
+						own_blog_id
 						category {
 							category_name
 							_id
@@ -85,23 +88,55 @@ class Page extends VuexModule implements IPageState {
 	}
 
   @Action
-  public async UploadToOwnBlogApi(params = {}) {
-  	const { data } = await applloClient.mutate({
+  public async updateToOwnBlogApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'updateLocalBlog', {
   		mutation: gql`
         mutation {
-          updateLocalBlog {
+          updateLocalBlog(pageId: "${params.pageId || ''}") {
             data
           }
         }
       `
   	})
-  	return data.pageList
+  	return result
   }
+
+	@Action
+  public async addOwnBlogApi(params: any) {
+  	const result = await rebuildResult(applloClient.mutate, 'addLocalBlog', {
+  		mutation: gql`
+        mutation {
+          addLocalBlog(pageId: "${params.pageId || ''}") {
+            data
+          }
+        }
+      `
+  	})
+  	return result
+  }
+
+	@Action
+	public async deleteOwnBlogApi(params: any) {
+  	try {
+  		const result = await rebuildResult(applloClient.mutate, 'deleteLocalBlog', {
+  			mutation: gql`
+          mutation {
+            deleteLocalBlog(pageId: "${params.pageId}") {
+              data
+            }
+          }
+        `
+  		})
+  		return result
+  	} catch (error) {
+  		return [error]
+  	}
+	}
 
   @Action({
   	rawError: true
   })
-  public async updatePageApi(params: any) {
+	public async updatePageApi(params: any) {
   	const result = await rebuildResult(applloClient.mutate, 'updatePage', {
   		mutation: gql`
 				mutation {
@@ -112,7 +147,7 @@ class Page extends VuexModule implements IPageState {
 			`
   	})
   	return result
-  }
+	}
 
 	@Action({
   	rawError: true
@@ -162,12 +197,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}
@@ -224,7 +253,7 @@ class Page extends VuexModule implements IPageState {
   	const result = await rebuildResult(applloClient.mutate, 'addCategory', {
   		mutation: gql`
 				mutation {
-					addCategory(input: {category_name: "${params.category_name}"}) {
+					addCategory(input: {category_name_en: "${params.category_name_en}", category_name: "${params.category_name}"}) {
 						data
 					}
 				}
@@ -249,6 +278,7 @@ class Page extends VuexModule implements IPageState {
 							updateTime
 							createTime
 							category_name
+							category_name_en
 							category_id
 						}
 					}
@@ -290,7 +320,7 @@ class Page extends VuexModule implements IPageState {
   	const result = await rebuildResult(applloClient.mutate, 'updateCategory', {
   		mutation: gql`
 				mutation {
-					updateCategory(category_name: "${params.category_name}", category_id: "${params.category_id || ''}") {
+					updateCategory(category_name_en: "${params.category_name_en}", category_name: "${params.category_name}", category_id: "${params.category_id || ''}") {
 						data
 					}
 				}
@@ -332,12 +362,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}
@@ -360,12 +384,6 @@ class Page extends VuexModule implements IPageState {
 					}
 				}
 			`
-  		// mutation: gql`mutation($pageId: String!, $content: String!) {
-  		// 		publishJuejinBlog(pageId: $pageId, content: $content) {
-  		// 			data
-  		// 		}
-  		// 	}
-  		// `
   	})
   	return result
 	}

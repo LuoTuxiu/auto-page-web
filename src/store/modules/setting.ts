@@ -26,6 +26,7 @@ class PageSetting extends VuexModule implements IPageState {
 					getPageSetting{
 						cookie_juejin
 						cookie_jianshu
+						own_blog_service_path
 					}
 				}
 			`
@@ -40,7 +41,7 @@ class PageSetting extends VuexModule implements IPageState {
   	const result = await rebuildResult(applloClient.mutate, 'updatePageSetting', {
   		mutation: gql`
 				mutation {
-					updatePageSetting(input: {cookie_juejin: "${params.cookie_juejin}", cookie_jianshu: "${params.cookie_jianshu || ''}"}) {
+					updatePageSetting(input: {own_blog_service_path: "${params.own_blog_service_path}", cookie_juejin: "${params.cookie_juejin}", cookie_jianshu: "${params.cookie_jianshu || ''}"}) {
 						data
 					}
 				}
