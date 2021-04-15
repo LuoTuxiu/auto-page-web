@@ -1,5 +1,8 @@
 <template>
-  <div class="blog-list">
+  <div
+    v-loading="loading"
+    class="blog-list"
+  >
     <div>
       <el-form
         :inline="true"
@@ -44,7 +47,9 @@
         刷新
       </el-button> -->
     </div>
-    <div class="page-content">
+    <div
+      class="page-content"
+    >
       <el-tabs
         v-model="activeTabs"
         tab-position="left"
@@ -59,7 +64,6 @@
         />
       </el-tabs>
       <div
-        v-loading="loading"
         class="rightTabContent"
       >
         <el-table
