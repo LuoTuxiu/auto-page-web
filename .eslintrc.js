@@ -26,8 +26,8 @@ module.exports = {
     'vue/match-component-file-name': 'error',
     'vue/object-curly-spacing': 'error',
     'no-tabs': 'off',
-    'no-mixed-spaces-and-tabs': 'off',
-    indent: [2, 'tab']
+    'no-mixed-spaces-and-tabs': 'off'
+    // indent: [2, 'tab']
   },
   extends: [
     'eslint:recommended',

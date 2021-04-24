@@ -40,7 +40,10 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <el-button @click="handleClickAddNewBlog">
+      <el-button
+        id="page-list-btn-add"
+        @click="handleClickAddNewBlog"
+      >
         新建本地博客
       </el-button>
       <!-- <el-button @click="handleGetLocalBlogList">
