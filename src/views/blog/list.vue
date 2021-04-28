@@ -14,6 +14,7 @@
             v-model="filterForm.keyword"
             placeholder="请输入关键字"
             clearable
+            @keydown.enter.native="handleGetLocalBlogList"
           />
         </el-form-item>
         <!-- <el-form-item label="活动区域">
@@ -219,7 +220,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { PageModule } from '@/store/modules/page'
 @Component({
-	name: 'Blog'
+  name: 'Blog'
 })
 export default class extends Vue {
   data = []
@@ -419,12 +420,11 @@ export default class extends Vue {
   }
 
   handleClickEdit(row) {
-  	this.$router.push({
-  		name: 'blogEdit',
+    const newRouteData = this.$router.resolve({ name: 'blogEdit',
   		params: {
   			id: row.pageId
-  		}
-  	})
+  		} })
+    window.open(newRouteData.href, '_blank')
   }
 
   async handleClickPublishOwnBlog(row) {
