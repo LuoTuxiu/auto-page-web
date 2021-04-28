@@ -31,12 +31,18 @@
               </el-radio>
             </div>
             <div class="category-list--action">
-              <el-button @click="handleSave">
+              <el-button
+                id="page-edit-popover-btn-save"
+                @click="handleSave"
+              >
                 保存
               </el-button>
             </div>
           </div>
-          <el-button slot="reference">
+          <el-button
+            id="page-edit-btn-save"
+            slot="reference"
+          >
             保存
           </el-button>
         </el-popover>
@@ -88,10 +94,10 @@ import VueMarkdown from 'vue-markdown'
 import { PageModule } from '@/store/modules/page'
 
 @Component({
-	name: 'Blog',
-	components: {
-		VueMarkdown
-	}
+  name: 'Blog',
+  components: {
+    VueMarkdown
+  }
 })
 
 export default class extends Vue {
@@ -105,166 +111,165 @@ export default class extends Vue {
 	intervalRef = null
 
 	destroyed() {
-		clearInterval(this.intervalRef)
-		document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
+	  clearInterval(this.intervalRef)
+	  document.getElementById('markdown-input').removeEventListener('scroll', this.handleInputScroll)
 	}
 	mounted() {
-		document.getElementById('markdown-input').addEventListener('scroll', this.handleInputScroll)
-		document.getElementById('vue-markdown--content').addEventListener('scroll', this.handlePreViewScroll)
-		window.document.body.onmouseover = (event) => {
-			this.currentMouseElement = event.target
-		}
-		this.handleGetLocalBlogDetail()
-		this.intervalRef = setInterval(() => {
-			if (this.$route.params.id) {
-				this.handleSave()
-			}
-		}, 60 * 1000) // 10s保存一次
+	  document.getElementById('markdown-input').addEventListener('scroll', this.handleInputScroll)
+	  document.getElementById('vue-markdown--content').addEventListener('scroll', this.handlePreViewScroll)
+	  window.document.body.onmouseover = (event) => {
+	    this.currentMouseElement = event.target
+	  }
+	  this.handleGetLocalBlogDetail()
+	  this.intervalRef = setInterval(() => {
+	    if (this.$route.params.id) {
+	      this.handleSave()
+	    }
+	  }, 60 * 1000) // 10s保存一次
 	}
 
 	async handleGetLocalBlogDetail(propParams = {}) {
-		const pageId = this.$route.params.id
-		if (pageId) {
-			const params = {
-				pageId
-			}
-			const [err, result] = await PageModule.getPageDetail(params)
-			this.result = Object.assign({}, result)
-			this.detail = Object.assign({}, result)
-			this.markdownData = decodeURIComponent(result.content)
-			this.selectCategory = result.category && result.category._id
-		}
+	  const pageId = this.$route.params.id
+	  if (pageId) {
+	    const params = {
+	      pageId
+	    }
+	    const [err, result] = await PageModule.getPageDetail(params)
+	    this.result = Object.assign({}, result)
+	    this.detail = Object.assign({}, result)
+	    this.markdownData = decodeURIComponent(result.content)
+	    this.selectCategory = result.category && result.category._id
+	  }
 	}
 
 	async handleGetAllCategory(propParams = {}) {
-		const [err, result] = await PageModule.getCategorysAll()
-		this.category = [].concat(result.list)
+	  const [err, result] = await PageModule.getCategorysAll()
+	  this.category = [].concat(result.list)
 	}
 
 	handleInputScroll(event) {
-		if (event.target.contains(this.currentMouseElement)) {
-			const markdownContent = document.getElementById('vue-markdown--content')
-			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
-		}
+	  if (event.target.contains(this.currentMouseElement)) {
+	    const markdownContent = document.getElementById('vue-markdown--content')
+	    markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+	  }
 	}
 
 	handlePreViewScroll(event) {
-		if (event.target.contains(this.currentMouseElement)) {
-			const markdownContent = document.getElementById('markdown-input')
-			markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
-		}
+	  if (event.target.contains(this.currentMouseElement)) {
+	    const markdownContent = document.getElementById('markdown-input')
+	    markdownContent.scrollTop = event.target.scrollTop * markdownContent.scrollHeight / event.target.scrollHeight
+	  }
 	}
 
 	handleCurrentChange(current) {
-		this.handleGetLocalBlogList({
-			page: current
-		})
+	  this.handleGetLocalBlogList({
+	    page: current
+	  })
 	}
 
 	handleSizeChange(size) {
-		this.handleGetLocalBlogList({
-			limit: size
-		})
+	  this.handleGetLocalBlogList({
+	    limit: size
+	  })
 	}
 
 	async handleSave() {
-		console.log(`handleSaveLocal`)
-		if (document.hidden || (this.markdownData === this.detail.content && this.detail.title === this.result.title && this.selectCategory === this.result.category_id)) { // 不在active的tab，则不需要自动保存
-			return
-		}
-		const pageId = this.$route.params.id
-		const params = {
-			content: this.markdownData,
-			category_id: this.selectCategory,
-			title: this.detail.title
-		}
-		let err
-		if (pageId) {
-			[err] = await PageModule.updatePageApi({ ...params,
-				pageId
-			})
-		} else {
-			[err] = await PageModule.addPageApi(params)
-		}
-		if (!err) {
-			this.$message({
-				type: 'success',
-				message: '保存成功'
-			})
-			// this.$router.push({
-			// 	name: 'blogList',
-			// 	params: {
-			// 	}
-			// })
-		} else {
-			this.$message({
-				type: 'warning',
-				message: err.message
-			})
-		}
-		// }).catch(() => {
-		// 	this.$message({
-		// 		type: 'info',
-		// 		message: '取消输入'
-		// 	})
-		// })
+	  if (document.hidden || (this.markdownData === this.detail.content && this.detail.title === this.result.title && this.selectCategory === this.result.category_id)) { // 不在active的tab，则不需要自动保存
+	    return
+	  }
+	  const pageId = this.$route.params.id
+	  const params = {
+	    content: this.markdownData,
+	    category_id: this.selectCategory,
+	    title: this.detail.title
+	  }
+	  let err
+	  if (pageId) {
+	    [err] = await PageModule.updatePageApi({ ...params,
+	      pageId
+	    })
+	  } else {
+	    [err] = await PageModule.addPageApi(params)
+	  }
+	  if (!err) {
+	    this.$message({
+	      type: 'success',
+	      message: '保存成功'
+	    })
+	    // this.$router.push({
+	    // 	name: 'blogList',
+	    // 	params: {
+	    // 	}
+	    // })
+	  } else {
+	    this.$message({
+	      type: 'error',
+	      message: err.message
+	    })
+	  }
+	  // }).catch(() => {
+	  // 	this.$message({
+	  // 		type: 'info',
+	  // 		message: '取消输入'
+	  // 	})
+	  // })
 	}
 
 	async handlePublishJuejin() {
-		const [err] = await PageModule.publishJuejinBlogApi({
-			pageId: this.$route.params.id,
-			content: this.markdownData
-		})
-		if (!err) {
-			this.handleGetLocalBlogDetail()
-			this.$message({
-				type: 'success',
-				message: '发布成功'
-			})
-		} else {
-			this.$message({
-				type: 'warning',
-				message: err.message
-			})
-		}
+	  const [err] = await PageModule.publishJuejinBlogApi({
+	    pageId: this.$route.params.id,
+	    content: this.markdownData
+	  })
+	  if (!err) {
+	    this.handleGetLocalBlogDetail()
+	    this.$message({
+	      type: 'success',
+	      message: '发布成功'
+	    })
+	  } else {
+	    this.$message({
+	      type: 'warning',
+	      message: err.message
+	    })
+	  }
 	}
 
 	async handleUpdateuejin(row) {
-		const [err] = await PageModule.updateJuejinBlogApi({
-			pageId: this.$route.params.id,
-			juejin_id: this.detail.juejin_id
-		})
-		if (!err) {
-			this.$message({
-				type: 'success',
-				message: '发布成功'
-			})
-		} else {
-			this.$message({
-				type: 'warning',
-				message: err.message
-			})
-		}
+	  const [err] = await PageModule.updateJuejinBlogApi({
+	    pageId: this.$route.params.id,
+	    juejin_id: this.detail.juejin_id
+	  })
+	  if (!err) {
+	    this.$message({
+	      type: 'success',
+	      message: '发布成功'
+	    })
+	  } else {
+	    this.$message({
+	      type: 'warning',
+	      message: err.message
+	    })
+	  }
 	}
 
 	async handleClickDeleteJuejin(row) {
-		await PageModule.deleteJuejinBlogApi({
-			pageId: row.pageId,
-			juejin_id: row.juejin_id
-		})
-		this.handleGetLocalBlogList()
+	  await PageModule.deleteJuejinBlogApi({
+	    pageId: row.pageId,
+	    juejin_id: row.juejin_id
+	  })
+	  this.handleGetLocalBlogList()
 	}
 
 	async handleClickPublishOwnBlog() {
-		if (this.detail.own_blog_id) {
-			await PageModule.updateToOwnBlogApi({ pageId: this.$route.params.id })
-		} else {
-			await PageModule.addOwnBlogApi({ pageId: this.$route.params.id })
-		}
-		this.$message({
-			type: 'success',
-			message: '发布自建站博客成功'
-		})
+	  if (this.detail.own_blog_id) {
+	    await PageModule.updateToOwnBlogApi({ pageId: this.$route.params.id })
+	  } else {
+	    await PageModule.addOwnBlogApi({ pageId: this.$route.params.id })
+	  }
+	  this.$message({
+	    type: 'success',
+	    message: '发布自建站博客成功'
+	  })
 	}
 }
 </script>

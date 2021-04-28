@@ -1,5 +1,8 @@
 <template>
-  <div class="blog-list">
+  <div
+    v-loading="loading"
+    class="blog-list"
+  >
     <div>
       <el-form
         :inline="true"
@@ -11,6 +14,7 @@
             v-model="filterForm.keyword"
             placeholder="请输入关键字"
             clearable
+            @keydown.enter.native="handleGetLocalBlogList"
           />
         </el-form-item>
         <!-- <el-form-item label="活动区域">
@@ -37,14 +41,19 @@
           </el-button>
         </el-form-item>
       </el-form>
-      <el-button @click="handleClickAddNewBlog">
+      <el-button
+        id="page-list-btn-add"
+        @click="handleClickAddNewBlog"
+      >
         新建本地博客
       </el-button>
       <!-- <el-button @click="handleGetLocalBlogList">
         刷新
       </el-button> -->
     </div>
-    <div class="page-content">
+    <div
+      class="page-content"
+    >
       <el-tabs
         v-model="activeTabs"
         tab-position="left"
@@ -59,7 +68,6 @@
         />
       </el-tabs>
       <div
-        v-loading="loading"
         class="rightTabContent"
       >
         <el-table
@@ -212,7 +220,7 @@
 import { Vue, Component } from 'vue-property-decorator'
 import { PageModule } from '@/store/modules/page'
 @Component({
-	name: 'Blog'
+  name: 'Blog'
 })
 export default class extends Vue {
   data = []
@@ -412,12 +420,11 @@ export default class extends Vue {
   }
 
   handleClickEdit(row) {
-  	this.$router.push({
-  		name: 'blogEdit',
+    const newRouteData = this.$router.resolve({ name: 'blogEdit',
   		params: {
   			id: row.pageId
-  		}
-  	})
+  		} })
+    window.open(newRouteData.href, '_blank')
   }
 
   async handleClickPublishOwnBlog(row) {
