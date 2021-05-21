@@ -78,7 +78,7 @@
           <el-table-column
             prop="title"
             label="标题"
-            width="300"
+            width="240"
           />
           <!-- <el-table-column
         prop="keyword"
@@ -128,7 +128,7 @@
           <el-table-column
             prop="operator"
             label="操作"
-            width="400"
+            width="260"
           >
             <template slot-scope="scope">
               <el-button
@@ -146,14 +146,19 @@
               >
                 发布掘金
               </el-button>
-              <el-button
-                v-if="scope.row.juejin_id"
-                type="text"
-                size="small"
-                @click="handleClickDeleteJuejin(scope.row)"
+              <el-popconfirm
+                title="确定删除掘金吗？"
+                @confirm="handleClickDeleteJuejin(scope.row)"
               >
-                删除掘金
-              </el-button>
+                <el-button
+                  v-if="scope.row.juejin_id"
+                  slot="reference"
+                  type="text"
+                  size="small"
+                >
+                  删除掘金
+                </el-button>
+              </el-popconfirm>
               <el-button
                 v-if="!scope.row.own_blog_id"
                 type="text"
@@ -186,21 +191,29 @@
               >
                 发布简书
               </el-button>
-              <el-button
-                v-if="scope.row.jianshu_id"
-                type="text"
-                size="small"
-                @click="handleClickDeleteJianshu(scope.row)"
+              <el-popconfirm
+                title="确定删除简书吗？"
+                @confirm="handleClickDeleteJianshu(scope.row)"
               >
-                删除简书
-              </el-button>
-              <el-button
-                type="text"
-                size="small"
-                @click="handleClickDeletepage(scope.row)"
+                <el-button
+                  v-if="scope.row.jianshu_id"
+                  type="text"
+                  size="small"
+                >
+                  删除简书
+                </el-button>
+              </el-popconfirm>
+              <el-popconfirm
+                title="确定删除该文章吗？"
+                @confirm="handleClickDeletepage(scope.row)"
               >
-                删除
-              </el-button>
+                <el-button
+                  type="text"
+                  size="small"
+                >
+                  删除
+                </el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
